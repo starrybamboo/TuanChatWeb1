@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { Post } from './Post';
 export type CursorPageBaseResponsePost = {
-    cursor?: string;
+    cursor?: number;
     isLast?: boolean;
     list?: Array<Post>;
 };

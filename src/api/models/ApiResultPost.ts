@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { Post } from './Post';
 export type ApiResultPost = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: Post;

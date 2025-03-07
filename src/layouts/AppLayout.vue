@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import LoginDialog from '../components/LoginDialog.vue'
+import { ref } from 'vue'
 
+const loginDialog = ref()
 const navItems = [
   { name: '推荐', path: '/feed' },
   { name: '社区', path: '/community' },
@@ -28,7 +31,8 @@ const navItems = [
       </div>
       <div class="header-right">
         <div class="user-section">
-          <el-button type="primary" size="small">登录</el-button>
+          <el-button type="primary" size="small" @click="loginDialog.show()">登录</el-button>
+          <login-dialog ref="loginDialog" />
         </div>
       </div>
     </header>
@@ -44,6 +48,8 @@ const navItems = [
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .app-header {
@@ -115,10 +121,7 @@ const navItems = [
 .app-main {
   margin-top: 64px;
   flex: 1;
-  padding: 20px;
-  width: 100%;
   box-sizing: border-box;
-  background-color: #f6f7f8;
-  color: #000000;
+  width: 100%;
 }
 </style>

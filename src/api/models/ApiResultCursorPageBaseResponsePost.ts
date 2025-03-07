@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { CursorPageBaseResponsePost } from './CursorPageBaseResponsePost';
 export type ApiResultCursorPageBaseResponsePost = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: CursorPageBaseResponsePost;

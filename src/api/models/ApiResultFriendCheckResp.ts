@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { FriendCheckResp } from './FriendCheckResp';
 export type ApiResultFriendCheckResp = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: FriendCheckResp;

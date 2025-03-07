@@ -3,27 +3,30 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ApiResultOssResp } from '../models/ApiResultOssResp';
+import type { UploadUrlReq } from '../models/UploadUrlReq';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class OssControllerService {
+    constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * getUploadUrl
-     * @param fileName
-     * @param scene
-     * @returns ApiResultOssResp
+     * @param req
+     * @returns ApiResultOssResp OK
      * @throws ApiError
      */
-    public static getUploadUrl(
-        fileName: string,
-        scene: number,
+    public getUploadUrl(
+        req: UploadUrlReq,
     ): CancelablePromise<ApiResultOssResp> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/oss/upload/url',
             query: {
-                'fileName': fileName,
-                'scene': scene,
+                'req': req,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }

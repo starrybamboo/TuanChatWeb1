@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { FriendResp } from './FriendResp';
 export type CursorPageBaseResponseFriendResp = {
-    cursor?: string;
+    cursor?: number;
     isLast?: boolean;
     list?: Array<FriendResp>;
 };

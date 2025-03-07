@@ -7,127 +7,158 @@ import type { ApiResultCursorPageBaseResponseFriendResp } from '../models/ApiRes
 import type { ApiResultFriendCheckResp } from '../models/ApiResultFriendCheckResp';
 import type { ApiResultFriendUnreadResp } from '../models/ApiResultFriendUnreadResp';
 import type { ApiResultVoid } from '../models/ApiResultVoid';
+import type { CursorPageBaseReq } from '../models/CursorPageBaseReq';
 import type { FriendApplyReq } from '../models/FriendApplyReq';
 import type { FriendApproveReq } from '../models/FriendApproveReq';
+import type { FriendCheckReq } from '../models/FriendCheckReq';
 import type { FriendDeleteReq } from '../models/FriendDeleteReq';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class FriendControllerService {
+    constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * applyApprove
      * @param requestBody
-     * @returns ApiResultVoid
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public static applyApprove(
-        requestBody?: FriendApproveReq,
+    public applyApprove(
+        requestBody: FriendApproveReq,
     ): CancelablePromise<ApiResultVoid> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'PUT',
             url: '/capi/user/friend/apply',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * apply
      * @param requestBody
-     * @returns ApiResultVoid
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public static apply(
-        requestBody?: FriendApplyReq,
+    public apply(
+        requestBody: FriendApplyReq,
     ): CancelablePromise<ApiResultVoid> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'POST',
             url: '/capi/user/friend/apply',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * friendList
-     * @param pageSize
-     * @param cursor
-     * @returns ApiResultCursorPageBaseResponseFriendResp
+     * @param request
+     * @returns ApiResultCursorPageBaseResponseFriendResp OK
      * @throws ApiError
      */
-    public static friendList(
-        pageSize?: number,
-        cursor?: string,
+    public friendList(
+        request: CursorPageBaseReq,
     ): CancelablePromise<ApiResultCursorPageBaseResponseFriendResp> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/user/friend/page',
             query: {
-                'pageSize': pageSize,
-                'cursor': cursor,
+                'request': request,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }
     /**
-     * check
-     * @param uidList
-     * @returns ApiResultFriendCheckResp
+     * @param request
+     * @returns ApiResultFriendCheckResp OK
      * @throws ApiError
      */
-    public static check(
-        uidList: Array<number>,
+    public check(
+        request: FriendCheckReq,
     ): CancelablePromise<ApiResultFriendCheckResp> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/user/friend/check',
             query: {
-                'uidList': uidList,
+                'request': request,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }
     /**
-     * unread
-     * @returns ApiResultFriendUnreadResp
+     * @returns ApiResultFriendUnreadResp OK
      * @throws ApiError
      */
-    public static unread(): CancelablePromise<ApiResultFriendUnreadResp> {
-        return __request(OpenAPI, {
+    public unread(): CancelablePromise<ApiResultFriendUnreadResp> {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/user/friend/apply/unread',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * page
-     * @param pageSize
-     * @param cursor
-     * @returns ApiResultCursorPageBaseResponseFriendApplyResp
+     * @param request
+     * @returns ApiResultCursorPageBaseResponseFriendApplyResp OK
      * @throws ApiError
      */
-    public static page(
-        pageSize?: number,
-        cursor?: string,
+    public page(
+        request: CursorPageBaseReq,
     ): CancelablePromise<ApiResultCursorPageBaseResponseFriendApplyResp> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/user/friend/apply/page',
             query: {
-                'pageSize': pageSize,
-                'cursor': cursor,
+                'request': request,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }
     /**
-     * delete
      * @param requestBody
-     * @returns ApiResultVoid
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public static delete(
-        requestBody?: FriendDeleteReq,
+    public delete(
+        requestBody: FriendDeleteReq,
     ): CancelablePromise<ApiResultVoid> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'DELETE',
             url: '/capi/user/friend',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
 }

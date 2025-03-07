@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { ChatMemberResp } from './ChatMemberResp';
 export type ApiResultListChatMemberResp = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: Array<ChatMemberResp>;

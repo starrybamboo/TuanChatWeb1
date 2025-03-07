@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { UserInfoResponse } from './UserInfoResponse';
 export type ApiResultUserInfoResponse = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: UserInfoResponse;

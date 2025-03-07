@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type MemberRequest = {
     pageSize?: number;
-    cursor?: string;
+    cursor?: number;
     roomId?: number;
 };
 

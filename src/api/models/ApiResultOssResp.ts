@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { OssResp } from './OssResp';
 export type ApiResultOssResp = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: OssResp;

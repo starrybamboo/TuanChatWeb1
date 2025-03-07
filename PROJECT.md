@@ -41,6 +41,7 @@ resolve: {
 
 - 已全局注册所有 Element Plus 图标组件
 - 已引入 Element Plus 样式
+- 实现了登录对话框等基础UI组件
 
 ### Pinia 状态管理
 
@@ -48,6 +49,70 @@ resolve: {
 
 - 已创建 Pinia 实例并配置到 Vue 应用
 - 状态管理相关代码位于 `src/stores` 目录
+- 实现了用户状态管理，包括：
+  - Token 管理和持久化
+  - 用户登录状态维护
+  - 用户信息存储
+
+## 用户认证系统
+
+### 登录功能
+
+实现了完整的用户登录流程：
+
+- 登录对话框组件（LoginDialog.vue）
+  - 用户名/密码输入
+  - 表单验证
+  - 登录状态提示
+- 登录状态管理
+  - Token 的获取和存储
+  - 登录状态的持久化
+  - 登出功能
+
+### API 认证
+
+实现了基于 Token 的 API 认证机制：
+
+- 统一的 API 实例配置
+  - 基础URL配置
+  - 跨域认证支持
+  - Token 注入
+- 请求拦截器
+  - 自动添加认证头
+  - Token 失效处理
+
+## 页面布局与路由
+
+### 顶部导航栏
+
+项目使用 `AppLayout.vue` 作为全局布局组件，实现了统一的顶部导航栏：
+
+- Logo 展示：左侧显示网站 Logo
+- 导航菜单：包含主要功能模块的导航链接
+  - 推荐（/feed）
+  - 社区（/community）
+  - 游玩（/play）
+  - 角色（/role）
+  - 模组（/module）
+  - 创作（/create）
+- 用户功能：右侧显示登录按钮
+
+导航栏样式特点：
+- 固定在页面顶部
+- 背景色为白色，底部有分割线
+- 导航链接hover时显示特殊效果
+- 响应式布局，适配不同屏幕尺寸
+
+### 页面路由
+
+项目采用 Vue Router 进行路由管理，主要功能模块包括：
+
+- 推荐页（/feed）：展示推荐内容
+- 社区页（/community）：社区交流功能
+- 游玩页（/play）：游戏相关功能
+- 角色页（/role）：角色相关功能
+- 模组页（/module）：模组相关功能
+- 创作页（/create）：创作者功能
 
 ## API 接口
 
@@ -58,7 +123,10 @@ resolve: {
 - API 定义文件：`public/tuanchat.openapi.json`
 - 生成命令：`yarn openapi`
 - 生成目录：`src/api`
-- 基础配置：API 基础路径设置为 `/capi`
+- 基础配置：
+  - API 基础路径：`/capi`
+  - 开启跨域认证（credentials）
+  - 自动注入认证Token
 
 ## 项目结构
 
@@ -76,8 +144,11 @@ resolve: {
 │   ├── assets/              # 项目资源文件
 │   │   └── vue.svg         # Vue logo图标
 │   ├── components/          # Vue组件目录
-│   │   └── HelloWorld.vue  # 示例组件
+│   │   └── LoginDialog.vue  # 登录对话框组件
+│   ├── layouts/             # 布局组件目录
+│   │   └── AppLayout.vue   # 全局布局组件
 │   ├── stores/              # Pinia状态管理
+│   │   ├── user.ts         # 用户状态管理
 │   │   └── index.ts        # 状态管理入口文件
 │   ├── App.vue              # 应用根组件
 │   ├── main.ts              # 应用入口文件，负责应用初始化
@@ -165,12 +236,22 @@ resolve: {
   - 创建Pinia实例
   - 配置Pinia插件
   - 提供状态管理初始化函数
+- `user.ts`: 用户状态管理
+  - Token管理和持久化
+  - 用户登录状态维护
+  - 用户信息存储
 
 ##### 组件（components/）
-- `HelloWorld.vue`: 示例组件
-  - 展示基本的组件结构
-  - 演示Vue 3组件特性
-  - 包含计数器交互示例
+- `LoginDialog.vue`: 登录对话框组件
+  - 用户登录表单
+  - 表单验证逻辑
+  - 登录状态提示
+
+##### 布局组件（layouts/）
+- `AppLayout.vue`: 全局布局组件
+  - 实现顶部导航栏
+  - 管理页面整体布局
+  - 集成用户功能区域
 
 ##### 资源文件（assets/）
 - `vue.svg`: Vue.js Logo图标

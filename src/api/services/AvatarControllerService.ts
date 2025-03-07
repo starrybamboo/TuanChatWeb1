@@ -8,72 +8,92 @@ import type { ApiResultRoleAvatar } from '../models/ApiResultRoleAvatar';
 import type { RoleAvatarCreateRequest } from '../models/RoleAvatarCreateRequest';
 import type { RoleAvatarRequest } from '../models/RoleAvatarRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class AvatarControllerService {
+    constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * getRoleAvatar
      * @param avatarId
-     * @returns ApiResultRoleAvatar
+     * @returns ApiResultRoleAvatar OK
      * @throws ApiError
      */
-    public static getRoleAvatar(
+    public getRoleAvatar(
         avatarId: number,
     ): CancelablePromise<ApiResultRoleAvatar> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/avatar',
             query: {
                 'avatarId': avatarId,
             },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * updateRoleAvatar
      * @param requestBody
-     * @returns ApiResultRoleAvatar
+     * @returns ApiResultRoleAvatar OK
      * @throws ApiError
      */
-    public static updateRoleAvatar(
-        requestBody?: RoleAvatarRequest,
+    public updateRoleAvatar(
+        requestBody: RoleAvatarRequest,
     ): CancelablePromise<ApiResultRoleAvatar> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'PUT',
             url: '/capi/avatar',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * setRoleAvatar
      * @param requestBody
-     * @returns ApiResultLong
+     * @returns ApiResultLong OK
      * @throws ApiError
      */
-    public static setRoleAvatar(
-        requestBody?: RoleAvatarCreateRequest,
+    public setRoleAvatar(
+        requestBody: RoleAvatarCreateRequest,
     ): CancelablePromise<ApiResultLong> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'POST',
             url: '/capi/avatar',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * deleteRoleAvatar
      * @param avatarId
-     * @returns ApiResult
+     * @returns ApiResult OK
      * @throws ApiError
      */
-    public static deleteRoleAvatar(
+    public deleteRoleAvatar(
         avatarId: number,
     ): CancelablePromise<ApiResult> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'DELETE',
             url: '/capi/avatar',
             query: {
                 'avatarId': avatarId,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }

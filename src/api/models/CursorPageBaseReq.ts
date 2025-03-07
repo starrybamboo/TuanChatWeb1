@@ -4,6 +4,6 @@
 /* eslint-disable */
 export type CursorPageBaseReq = {
     pageSize?: number;
-    cursor?: string;
+    cursor?: number;
 };
 

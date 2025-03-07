@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { RoleAvatar } from './RoleAvatar';
 export type ApiResultRoleAvatar = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: RoleAvatar;

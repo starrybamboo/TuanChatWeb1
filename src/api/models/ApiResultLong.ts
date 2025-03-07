@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ApiResultLong = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: number;

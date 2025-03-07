@@ -3,14 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 export type RoomGroup = {
-    roomId?: number;
-    name?: string;
-    avatar?: string;
-    description?: string;
-    deleteStatus?: number;
+    roomId: number;
+    name: string;
+    avatar: string;
+    description: string;
+    deleteStatus: number;
     createTime?: string;
     updateTime?: string;
-    parentGroupId?: number;
-    backgroundImage?: string;
+    parentGroupId: number;
+    backgroundImage: string;
 };
 

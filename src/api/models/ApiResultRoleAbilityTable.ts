@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { RoleAbilityTable } from './RoleAbilityTable';
 export type ApiResultRoleAbilityTable = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: RoleAbilityTable;

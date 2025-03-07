@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { Message } from './Message';
 export type ApiResultMessage = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: Message;

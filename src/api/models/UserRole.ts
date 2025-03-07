@@ -3,11 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserRole = {
-    userId?: number;
-    roleId?: number;
+    userId: number;
+    roleId: number;
     roleName?: string;
     description?: string;
-    avatar?: string;
+    avatarId?: number;
     createTime?: string;
     updateTime?: string;
 };

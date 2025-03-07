@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { CursorPageBaseResponseFriendResp } from './CursorPageBaseResponseFriendResp';
 export type ApiResultCursorPageBaseResponseFriendResp = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: CursorPageBaseResponseFriendResp;

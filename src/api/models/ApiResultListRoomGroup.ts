@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { RoomGroup } from './RoomGroup';
 export type ApiResultListRoomGroup = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: Array<RoomGroup>;

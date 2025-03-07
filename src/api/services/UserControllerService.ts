@@ -6,39 +6,49 @@ import type { ApiResultString } from '../models/ApiResultString';
 import type { ApiResultUserInfoResponse } from '../models/ApiResultUserInfoResponse';
 import type { UserLoginRequest } from '../models/UserLoginRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class UserControllerService {
+    constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * login
      * @param requestBody
-     * @returns ApiResultString
+     * @returns ApiResultString OK
      * @throws ApiError
      */
-    public static login(
-        requestBody?: UserLoginRequest,
+    public login(
+        requestBody: UserLoginRequest,
     ): CancelablePromise<ApiResultString> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'POST',
             url: '/capi/user/public/login',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * getUserInfo
      * @param userId
-     * @returns ApiResultUserInfoResponse
+     * @returns ApiResultUserInfoResponse OK
      * @throws ApiError
      */
-    public static getUserInfo(
+    public getUserInfo(
         userId: number,
     ): CancelablePromise<ApiResultUserInfoResponse> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/user/info',
             query: {
                 'userId': userId,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }

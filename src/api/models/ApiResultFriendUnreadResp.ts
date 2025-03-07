@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { FriendUnreadResp } from './FriendUnreadResp';
 export type ApiResultFriendUnreadResp = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: FriendUnreadResp;

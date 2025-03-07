@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { RoomResp } from './RoomResp';
 export type ApiResultRoomResp = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: RoomResp;

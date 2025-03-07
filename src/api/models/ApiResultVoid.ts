@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ApiResultVoid = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
-    data?: any;
+    data?: Record<string, any>;
 };
 

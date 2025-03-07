@@ -7,128 +7,161 @@ import type { ApiResult } from '../models/ApiResult';
 import type { ApiResultCursorPageBaseResponsePost } from '../models/ApiResultCursorPageBaseResponsePost';
 import type { ApiResultFullPostResponse } from '../models/ApiResultFullPostResponse';
 import type { ApiResultPost } from '../models/ApiResultPost';
+import type { CursorPageBaseReq } from '../models/CursorPageBaseReq';
 import type { Post } from '../models/Post';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class CommunityControllerService {
+    constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * getPost
      * @param postId
-     * @returns ApiResultPost
+     * @returns ApiResultPost OK
      * @throws ApiError
      */
-    public static getPost(
+    public getPost(
         postId: number,
     ): CancelablePromise<ApiResultPost> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/community/post',
             query: {
                 'postId': postId,
             },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * modifyPost
      * @param requestBody
-     * @returns ApiResult
+     * @returns ApiResult OK
      * @throws ApiError
      */
-    public static modifyPost(
-        requestBody?: Post,
+    public modifyPost(
+        requestBody: Post,
     ): CancelablePromise<ApiResult> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'PUT',
             url: '/capi/community/post',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * publishPost
      * @param requestBody
-     * @returns ApiResult
+     * @returns ApiResult OK
      * @throws ApiError
      */
-    public static publishPost(
-        requestBody?: AddPostRequest,
+    public publishPost(
+        requestBody: AddPostRequest,
     ): CancelablePromise<ApiResult> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'POST',
             url: '/capi/community/post',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * deletePost
      * @param postId
-     * @returns ApiResult
+     * @returns ApiResult OK
      * @throws ApiError
      */
-    public static deletePost(
+    public deletePost(
         postId: number,
     ): CancelablePromise<ApiResult> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'DELETE',
             url: '/capi/community/post',
             query: {
                 'postId': postId,
             },
-        });
-    }
-    /**
-     * getPostPage
-     * @param pageSize
-     * @param cursor
-     * @returns ApiResultCursorPageBaseResponsePost
-     * @throws ApiError
-     */
-    public static getPostPage(
-        pageSize?: number,
-        cursor?: string,
-    ): CancelablePromise<ApiResultCursorPageBaseResponsePost> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/capi/community/post/page',
-            query: {
-                'pageSize': pageSize,
-                'cursor': cursor,
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }
     /**
-     * getImage
-     * @param imageId
-     * @returns ApiResult
+     * @param request
+     * @returns ApiResultCursorPageBaseResponsePost OK
      * @throws ApiError
      */
-    public static getImage(
+    public getPostPage(
+        request: CursorPageBaseReq,
+    ): CancelablePromise<ApiResultCursorPageBaseResponsePost> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/capi/community/post/page',
+            query: {
+                'request': request,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
+    /**
+     * @param imageId
+     * @returns ApiResult OK
+     * @throws ApiError
+     */
+    public getImage(
         imageId: number,
     ): CancelablePromise<ApiResult> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/community/post/image',
             query: {
                 'imageId': imageId,
             },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * getPostFull
      * @param postId
-     * @returns ApiResultFullPostResponse
+     * @returns ApiResultFullPostResponse OK
      * @throws ApiError
      */
-    public static getPostFull(
+    public getPostFull(
         postId: number,
     ): CancelablePromise<ApiResultFullPostResponse> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/community/post/full',
             query: {
                 'postId': postId,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }

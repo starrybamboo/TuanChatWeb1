@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { ChatMessageResponse } from './ChatMessageResponse';
 export type CursorPageBaseResponseChatMessageResponse = {
-    cursor?: string;
+    cursor?: number;
     isLast?: boolean;
     list?: Array<ChatMessageResponse>;
 };

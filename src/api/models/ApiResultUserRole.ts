@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { UserRole } from './UserRole';
 export type ApiResultUserRole = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: UserRole;

@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { CursorPageBaseResponseChatMessageResponse } from './CursorPageBaseResponseChatMessageResponse';
 export type ApiResultCursorPageBaseResponseChatMessageResponse = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: CursorPageBaseResponseChatMessageResponse;

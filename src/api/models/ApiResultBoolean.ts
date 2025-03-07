@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ApiResultBoolean = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: boolean;

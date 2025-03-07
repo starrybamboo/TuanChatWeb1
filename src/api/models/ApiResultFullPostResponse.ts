@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { FullPostResponse } from './FullPostResponse';
 export type ApiResultFullPostResponse = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: FullPostResponse;

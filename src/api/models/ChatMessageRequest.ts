@@ -9,6 +9,6 @@ export type ChatMessageRequest = {
     avatarId: number;
     content: string;
     replyMsgId?: number;
-    body: any;
+    body: Record<string, any>;
 };
 

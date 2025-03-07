@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { IdRespVO } from './IdRespVO';
 export type ApiResultIdRespVO = {
-    success?: boolean;
+    success: boolean;
     errCode?: number;
     errMsg?: string;
     data?: IdRespVO;

@@ -6,80 +6,95 @@ import type { ApiResultCursorPageBaseResponseChatMessageResponse } from '../mode
 import type { ApiResultMessage } from '../models/ApiResultMessage';
 import type { ApiResultVoid } from '../models/ApiResultVoid';
 import type { ChatMessageMarkRequest } from '../models/ChatMessageMarkRequest';
+import type { ChatMessagePageRequest } from '../models/ChatMessagePageRequest';
 import type { ChatMessageRequest } from '../models/ChatMessageRequest';
 import type { Message } from '../models/Message';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
-import { request as __request } from '../core/request';
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ChatControllerService {
+    constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * updateMessage
      * @param requestBody
-     * @returns ApiResultMessage
+     * @returns ApiResultMessage OK
      * @throws ApiError
      */
-    public static updateMessage(
-        requestBody?: Message,
+    public updateMessage(
+        requestBody: Message,
     ): CancelablePromise<ApiResultMessage> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'PUT',
             url: '/capi/chat/message',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * sendMessage
      * @param requestBody
-     * @returns ApiResultVoid
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public static sendMessage(
-        requestBody?: ChatMessageRequest,
+    public sendMessage(
+        requestBody: ChatMessageRequest,
     ): CancelablePromise<ApiResultVoid> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'POST',
             url: '/capi/chat/message',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * setMsgMark
      * @param requestBody
-     * @returns ApiResultVoid
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public static setMsgMark(
-        requestBody?: ChatMessageMarkRequest,
+    public setMsgMark(
+        requestBody: ChatMessageMarkRequest,
     ): CancelablePromise<ApiResultVoid> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'PUT',
             url: '/capi/chat/message/mark',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
         });
     }
     /**
-     * getMsgPage
-     * @param roomId
-     * @param pageSize
-     * @param cursor
-     * @returns ApiResultCursorPageBaseResponseChatMessageResponse
+     * @param request
+     * @returns ApiResultCursorPageBaseResponseChatMessageResponse OK
      * @throws ApiError
      */
-    public static getMsgPage(
-        roomId: number,
-        pageSize?: number,
-        cursor?: string,
+    public getMsgPage(
+        request: ChatMessagePageRequest,
     ): CancelablePromise<ApiResultCursorPageBaseResponseChatMessageResponse> {
-        return __request(OpenAPI, {
+        return this.httpRequest.request({
             method: 'GET',
             url: '/capi/chat/message/page',
             query: {
-                'pageSize': pageSize,
-                'cursor': cursor,
-                'roomId': roomId,
+                'request': request,
+            },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
             },
         });
     }
