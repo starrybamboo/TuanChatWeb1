@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '@/api/instance'
+import { tuanchat } from '@/api/instance'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -23,11 +23,11 @@ const registrationData = ref({
 const handleLogin = async () => {
   try {
     loading.value = true
-    const result = await api.userController.login({
+    const result = await tuanchat.userController.login({
       userId: Number(loginForm.value.userId),
       password: loginForm.value.password
     })
-    const userInfo = await api.userController.getUserInfo(Number(loginForm.value.userId))
+    const userInfo = await tuanchat.userController.getUserInfo(Number(loginForm.value.userId))
     // 保存token和用户信息
     userStore.setToken(result.data!)
     userStore.setUserInfo(userInfo.data!)

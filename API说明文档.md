@@ -111,6 +111,10 @@
 
 1. API实例创建：
 ```typescript
+// 推荐使用项目中已创建的tuanchat实例（从@/api/instance导入）
+import { tuanchat } from '@/api/instance';
+
+// 或者自行创建新实例
 const api = new TuanChat({
     BASE: 'http://localhost:8081',
     WITH_CREDENTIALS: true,
