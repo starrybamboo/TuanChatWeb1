@@ -511,7 +511,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
+                  "$ref": "#/components/schemas/ApiResultVoid"
                 }
               }
             }
@@ -1272,6 +1272,76 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/user/public/register": {
+      "post": {
+        "tags": [
+          "user-controller"
+        ],
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultString"
                 }
               }
             }
@@ -2557,6 +2627,77 @@
         }
       }
     },
+    "/capi/role/user/{userId}": {
+      "get": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "getUserRoles",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListUserRole"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/capi/role/avatar": {
       "get": {
         "tags": [
@@ -3492,18 +3633,26 @@
           }
         }
       },
-      "UserLoginRequest": {
+      "UserRegisterRequest": {
         "required": [
           "password",
-          "userId"
+          "username"
         ],
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "integer",
-            "format": "int64"
+          "username": {
+            "type": "string"
           },
           "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "avatar": {
             "type": "string"
           }
         }
@@ -3525,6 +3674,22 @@
             "type": "string"
           },
           "data": {
+            "type": "string"
+          }
+        }
+      },
+      "UserLoginRequest": {
+        "required": [
+          "password",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "password": {
             "type": "string"
           }
         }
@@ -3758,9 +3923,7 @@
       },
       "UserInfoResponse": {
         "required": [
-          "roles",
-          "userId",
-          "username"
+          "userId"
         ],
         "type": "object",
         "properties": {
@@ -3771,17 +3934,7 @@
           "username": {
             "type": "string"
           },
-          "userMark": {
-            "type": "number"
-          },
-          "userLevel": {
-            "type": "integer",
-            "format": "int32"
-          },
           "avatar": {
-            "type": "string"
-          },
-          "ipInfo": {
             "type": "string"
           },
           "activeStatus": {
@@ -3791,12 +3944,6 @@
           "lastLoginTime": {
             "type": "string",
             "format": "date-time"
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserRole"
-            }
           }
         }
       },

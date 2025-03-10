@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { UserRole } from '@/api/models/UserRole';
 import { tuanchat } from '@/api/instance';
+import { useUserStore } from '@/stores/user';
 
 export const useRoleStore = defineStore('role', {
   state: () => ({
@@ -14,13 +15,19 @@ export const useRoleStore = defineStore('role', {
       this.loading = true;
       this.error = null;
       try {
-        // 假设这里调用获取角色列表的API
-        // 由于API中没有直接获取所有角色的方法，这里模拟一个获取角色列表的请求
-        // 实际项目中需要根据真实API进行调整
-        const response = await tuanchat.roleController.createRole();
+        // 获取当前登录用户的ID
+        const userStore = useUserStore();
+        if (!userStore.token) {
+          this.error = '用户未登录，无法获取角色列表';
+          return;
+        }
+        
+        const userId = Number(userStore.token);
+        // 使用getUserRoles API获取用户的所有角色
+        const response = await tuanchat.roleController.getUserRoles(userId);
+        
         if (response.success && response.data) {
-          // 这里只是添加一个角色，实际项目中应该有获取所有角色的API
-          this.roles = [response.data];
+          this.roles = response.data;
         } else {
           this.error = response.errMsg || '获取角色列表失败';
         }

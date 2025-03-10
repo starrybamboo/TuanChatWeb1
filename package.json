@@ -7,7 +7,7 @@
     "dev": "vite --open",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "openapi": "openapi --input ./public/tuanchat.openapi.json --output ./src/api --client axios --name TuanChat"
+    "openapi": "openapi --input ./public/tuanchat_OpenAPI.json --output ./src/api --client axios --name TuanChat"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

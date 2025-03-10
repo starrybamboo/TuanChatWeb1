@@ -4,8 +4,10 @@
 /* eslint-disable */
 import type { ApiResult } from '../models/ApiResult';
 import type { ApiResultListRoleAvatar } from '../models/ApiResultListRoleAvatar';
+import type { ApiResultListUserRole } from '../models/ApiResultListUserRole';
 import type { ApiResultRoleAbilityTable } from '../models/ApiResultRoleAbilityTable';
 import type { ApiResultUserRole } from '../models/ApiResultUserRole';
+import type { ApiResultVoid } from '../models/ApiResultVoid';
 import type { RoleAbilityTable } from '../models/RoleAbilityTable';
 import type { UserRole } from '../models/UserRole';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -73,12 +75,12 @@ export class RoleControllerService {
     }
     /**
      * @param roleId
-     * @returns ApiResult OK
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
     public deleteRole1(
         roleId: number,
-    ): CancelablePromise<ApiResult> {
+    ): CancelablePromise<ApiResultVoid> {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/capi/role',
@@ -128,6 +130,28 @@ export class RoleControllerService {
             url: '/capi/role/ability',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
+    /**
+     * @param userId
+     * @returns ApiResultListUserRole OK
+     * @throws ApiError
+     */
+    public getUserRoles(
+        userId: number,
+    ): CancelablePromise<ApiResultListUserRole> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/capi/role/user/{userId}',
+            path: {
+                'userId': userId,
+            },
             errors: {
                 400: `Bad Request`,
                 405: `Method Not Allowed`,

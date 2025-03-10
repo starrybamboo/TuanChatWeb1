@@ -16,14 +16,9 @@ const searchQuery = ref('');
 const fetchRoles = async () => {
   loading.value = true;
   try {
-    // 如果用户已登录且有用户信息，则从用户信息中获取角色列表
-    if (userStore.userInfo && userStore.userInfo.roles) {
-      roles.value = userStore.userInfo.roles;
-    } else {
-      // 否则通过角色API获取角色列表
-      await roleStore.fetchRoles();
-      roles.value = roleStore.roles;
-    }
+    // 直接通过角色API获取角色列表
+    await roleStore.fetchRoles();
+    roles.value = roleStore.roles;
   } catch (error) {
     ElMessage.error('获取角色列表失败');
     console.error(error);

@@ -81,6 +81,7 @@ export type { RoomResp } from './models/RoomResp';
 export type { UploadUrlReq } from './models/UploadUrlReq';
 export type { UserInfoResponse } from './models/UserInfoResponse';
 export type { UserLoginRequest } from './models/UserLoginRequest';
+export type { UserRegisterRequest } from './models/UserRegisterRequest';
 export type { UserRole } from './models/UserRole';
 
 export { AvatarControllerService } from './services/AvatarControllerService';

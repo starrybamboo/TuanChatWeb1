@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserInfoResponse = {
-    userId: number;
-    username?: string;
+export type UserRegisterRequest = {
+    username: string;
+    password: string;
+    email?: string;
+    phone?: string;
     avatar?: string;
-    activeStatus?: string;
-    lastLoginTime?: string;
 };
 
