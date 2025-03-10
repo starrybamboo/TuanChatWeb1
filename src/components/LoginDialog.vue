@@ -27,10 +27,21 @@ const handleLogin = async () => {
       userId: Number(loginForm.value.userId),
       password: loginForm.value.password
     })
-    const userInfo = await tuanchat.userController.getUserInfo(Number(loginForm.value.userId))
-    // 保存token和用户信息
+    
+    // 先设置token
     userStore.setToken(result.data!)
-    userStore.setUserInfo(userInfo.data!)
+    
+    // 然后获取用户信息并设置
+    try {
+      const userInfo = await tuanchat.userController.getUserInfo(Number(loginForm.value.userId))
+      userStore.setUserInfo(userInfo.data!)
+    } catch (infoError) {
+      console.error('获取用户信息失败：', infoError)
+      // 如果获取用户信息失败，清除token
+      userStore.clearUserInfo()
+      return
+    }
+    
     // 登录成功后跳转到首页
     router.push('/feed')
     visible.value = false
