@@ -9,6 +9,8 @@ export const useAvatarStore = defineStore('avatar', {
     avatars: [] as RoleAvatar[],
     currentAvatar: null as RoleAvatar | null,
     avatarMap: new Map<number, string>(), // avatarId 到 avatarUrl 的映射
+    spriteUrlMap: new Map<number, string>(), // avatarId 到 spriteUrl 的映射
+    avatarTitleMap: new Map<number, string>(), // avatarId 到 avatarTitle 的映射
     loading: false,
     error: null as string | null
   }),
@@ -17,6 +19,16 @@ export const useAvatarStore = defineStore('avatar', {
     getAvatarUrl: (state) => (avatarId: number | undefined) => {
       if (!avatarId) return '';
       return state.avatarMap.get(avatarId) || '';
+    },
+    // 根据头像ID获取精灵图URL
+    getSpriteUrl: (state) => (avatarId: number | undefined) => {
+      if (!avatarId) return '';
+      return state.spriteUrlMap.get(avatarId) || '';
+    },
+    // 根据头像ID获取头像标题
+    getAvatarTitle: (state) => (avatarId: number | undefined) => {
+      if (!avatarId) return '';
+      return state.avatarTitleMap.get(avatarId) || '';
     },
     // 获取所有头像列表
     getAllAvatars: (state) => {
@@ -55,8 +67,16 @@ export const useAvatarStore = defineStore('avatar', {
         if (response.success && response.data) {
           this.currentAvatar = response.data;
           // 更新头像映射
-          if (response.data.avatarId && response.data.avatarUrl) {
-            this.avatarMap.set(response.data.avatarId, response.data.avatarUrl);
+          if (response.data.avatarId) {
+            if (response.data.avatarUrl) {
+              this.avatarMap.set(response.data.avatarId, response.data.avatarUrl);
+            }
+            if (response.data.spriteUrl) {
+              this.spriteUrlMap.set(response.data.avatarId, response.data.spriteUrl);
+            }
+            if (response.data.avatarTitle) {
+              this.avatarTitleMap.set(response.data.avatarId, response.data.avatarTitle);
+            }
           }
           return response.data;
         } else {
@@ -120,6 +140,12 @@ export const useAvatarStore = defineStore('avatar', {
             if (updatedAvatar.avatarUrl) {
               this.avatarMap.set(updatedAvatar.avatarId, updatedAvatar.avatarUrl);
             }
+            if (updatedAvatar.spriteUrl) {
+              this.spriteUrlMap.set(updatedAvatar.avatarId, updatedAvatar.spriteUrl);
+            }
+            if (updatedAvatar.avatarTitle) {
+              this.avatarTitleMap.set(updatedAvatar.avatarId, updatedAvatar.avatarTitle);
+            }
           }
           return updatedAvatar;
         } else {
@@ -148,6 +174,8 @@ export const useAvatarStore = defineStore('avatar', {
           }
           // 从映射中移除
           this.avatarMap.delete(avatarId);
+          this.spriteUrlMap.delete(avatarId);
+          this.avatarTitleMap.delete(avatarId);
           return true;
         } else {
           this.error = response.errMsg || '删除头像失败';
@@ -163,8 +191,16 @@ export const useAvatarStore = defineStore('avatar', {
     // 更新头像映射
     updateAvatarMap(avatars: RoleAvatar[]) {
       avatars.forEach(avatar => {
-        if (avatar.avatarId && avatar.avatarUrl) {
-          this.avatarMap.set(avatar.avatarId, avatar.avatarUrl);
+        if (avatar.avatarId) {
+          if (avatar.avatarUrl) {
+            this.avatarMap.set(avatar.avatarId, avatar.avatarUrl);
+          }
+          if (avatar.spriteUrl) {
+            this.spriteUrlMap.set(avatar.avatarId, avatar.spriteUrl);
+          }
+          if (avatar.avatarTitle) {
+            this.avatarTitleMap.set(avatar.avatarId, avatar.avatarTitle);
+          }
         }
       });
     },
@@ -173,6 +209,8 @@ export const useAvatarStore = defineStore('avatar', {
       this.avatars = [];
       this.currentAvatar = null;
       this.avatarMap.clear();
+      this.spriteUrlMap.clear();
+      this.avatarTitleMap.clear();
       this.loading = false;
       this.error = null;
     }
