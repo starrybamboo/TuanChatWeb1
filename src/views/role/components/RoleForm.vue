@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { Check, Close, Plus } from '@element-plus/icons-vue';
+import { ref, onMounted } from 'vue';
+import { Check, Close } from '@element-plus/icons-vue';
 import type { UserRole } from '@/api/models/UserRole';
 import type { RoleAvatar } from '@/api/models/RoleAvatar';
-import {ElMessage} from "element-plus";
-import type {RoleAvatarCreateRequest, RoleAvatarRequest, UploadUrlReq} from "@/api";
-import {tuanchat} from "@/api/instance.ts";
+import AvatarUploader from '@/components/AvatarUploader.vue';
 
 interface Props {
   role: UserRole | null;
@@ -31,186 +29,21 @@ const editForm = ref<UserRole>({
   roleId: 0,
   roleName: '',
   description: '',
+  avatarId: 0,
   ...(props.role || {})
 });
-
-// 头像标题编辑
-const editingTitle = ref('');
-
-// 监听avatarId变化，更新编辑标题
-watch(() => editForm.value.avatarId, (newAvatarId) => {
-  if (newAvatarId) {
-    const avatar = props.avatars.find(a => a.avatarId === newAvatarId);
-    editingTitle.value = avatar?.avatarTitle || '';
-  } else {
-    editingTitle.value = '';
-  }
-}, { immediate: true }); // 添加immediate选项，确保组件初始化时执行
-
-// 监听role和avatars的变化，确保数据同步
-watch([() => props.role, () => props.avatars], ([newRole, newAvatars]) => {
-  if (newRole && editForm.value.avatarId) {
-    const avatar = newAvatars.find(a => a.avatarId === editForm.value.avatarId);
-    editingTitle.value = avatar?.avatarTitle || '';
-  }
-}, { immediate: true });
-
-// 更新头像标题
-const handleUpdateTitle = async () => {
-  if (!editForm.value.avatarId || !props.role?.roleId) return;
-  
-  try {
-    const updateRequest: RoleAvatarRequest = {
-      roleId: props.role.roleId,
-      avatarId: editForm.value.avatarId,
-      avatarTitle: editingTitle.value,
-      avatarUrl: getAvatarUrl(editForm.value.avatarId),
-      spriteUrl: getSpriteUrl(editForm.value.avatarId)
-    };
-    
-    const updateResponse = await tuanchat.avatarController.updateRoleAvatar(updateRequest);
-    if (!updateResponse.success) {
-      throw new Error('更新头像标题失败');
-    }
-    
-    ElMessage.success('头像标题更新成功');
-    // 通知父组件刷新头像列表
-    emit('refreshAvatars');
-  } catch (error) {
-    console.error('更新头像标题失败:', error);
-    ElMessage.error(error instanceof Error ? error.message : '更新头像标题失败');
-  }
-};
-
-// 处理头像文件选择
-const handleAvatarChange = async (uploadFile: any) => {
-  const file = uploadFile.raw;
-  if (!file) return;
-  
-  // 验证文件类型
-  const isImage = file.type.startsWith('image/');
-  if (!isImage) {
-    ElMessage.error('请选择图片文件');
-    return;
-  }
-  
-  // 验证文件大小（限制为5MB）
-  const maxSize = 5 * 1024 * 1024;
-  if (file.size > maxSize) {
-    ElMessage.error('图片大小不能超过5MB');
-    return;
-  }
-  
-  try {
-    // 获取预上传地址（精灵图）
-    const spriteUploadReq: UploadUrlReq = {
-      fileName: `sprite_${file.name}`,
-      scene: 2 // 精灵图场景
-    };
-    
-    const spriteResponse = await tuanchat.ossController.getUploadUrl(spriteUploadReq);
-    if (!spriteResponse.data?.uploadUrl) {
-      throw new Error('获取精灵图上传地址失败');
-    }
-    
-    // 上传精灵图
-    const spriteUploadResponse = await fetch(spriteResponse.data.uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: {
-        'Content-Type': file.type
-      }
-    });
-    
-    if (!spriteUploadResponse.ok) {
-      throw new Error('精灵图上传失败');
-    }
-    
-    // TODO: 这里应该添加图片裁剪的逻辑
-    // 暂时使用同一张图片作为头像
-    
-    // 获取预上传地址（头像）
-    const avatarUploadReq: UploadUrlReq = {
-      fileName: `avatar_${file.name}`,
-      scene: 1 // 头像场景
-    };
-    
-    const avatarResponse = await tuanchat.ossController.getUploadUrl(avatarUploadReq);
-    if (!avatarResponse.data?.uploadUrl) {
-      throw new Error('获取头像上传地址失败');
-    }
-    
-    // 上传头像
-    const avatarUploadResponse = await fetch(avatarResponse.data.uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: {
-        'Content-Type': file.type
-      }
-    });
-    
-    if (!avatarUploadResponse.ok) {
-      throw new Error('头像上传失败');
-    }
-    
-    // 创建头像记录
-    if (props.role?.roleId) {
-      const createRequest: RoleAvatarCreateRequest = {
-        roleId: props.role.roleId
-      };
-      
-      const createResponse = await tuanchat.avatarController.setRoleAvatar(createRequest);
-      if (!createResponse.success || !createResponse.data) {
-        throw new Error('创建头像记录失败');
-      }
-      
-      // 更新头像信息
-      const avatarId = createResponse.data;
-      const updateRequest: RoleAvatarRequest = {
-        roleId: props.role.roleId,
-        avatarId: avatarId,
-        avatarTitle: file.name,
-        avatarUrl: avatarResponse.data.downloadUrl,
-        spriteUrl: spriteResponse.data.downloadUrl
-      };
-      
-      const updateResponse = await tuanchat.avatarController.updateRoleAvatar(updateRequest);
-      if (!updateResponse.success) {
-        throw new Error('更新头像信息失败');
-      }
-      
-      ElMessage.success('头像上传成功');
-      // 刷新头像列表
-      emit('uploadAvatar', file);
-    }
-  } catch (error) {
-    console.error('上传头像失败:', error);
-    ElMessage.error(error instanceof Error ? error.message : '上传头像失败');
-  }
-};
-
-// 获取头像URL
-const getAvatarUrl = (avatarId: number | undefined) => {
-  const avatar = props.avatars.find(a => a.avatarId === avatarId);
-  return avatar?.avatarUrl || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
-};
-
-// 获取头像标题
-const getAvatarTitle = (avatarId: number | undefined) => {
-  const avatar = props.avatars.find(a => a.avatarId === avatarId);
-  return avatar?.avatarTitle || '默认头像';
-};
-
-// 获取精灵图URL
-const getSpriteUrl = (avatarId: number | undefined) => {
-  const avatar = props.avatars.find(a => a.avatarId === avatarId);
-  return avatar?.spriteUrl || '';
-};
 
 // 保存表单
 const handleSave = () => {
   emit('save', editForm.value);
 };
+// 在组件挂载时检查路由参数
+onMounted(() => {
+  // 当进入编辑模式时，立即触发头像刷新
+  if (props.role?.roleId) {
+    emit('refreshAvatars');
+  }
+});
 </script>
 
 <template>
@@ -235,74 +68,13 @@ const handleSave = () => {
         </el-form-item>
         
         <el-form-item label="角色头像">
-          <div class="avatar-selector">
-            <div class="current-avatar-container">
-              <el-avatar 
-                :size="100" 
-                :src="getAvatarUrl(editForm.avatarId)"
-                class="current-avatar"
-                shape="square"
-              >
-                {{ editForm.roleName ? editForm.roleName.charAt(0) : 'R' }}
-              </el-avatar>
-              
-              <div class="avatar-title-edit">
-                <el-input
-                  v-model="editingTitle"
-                  size="small"
-                  placeholder="请输入头像标题"
-                  :disabled="!editForm.avatarId"
-                />
-                <el-button 
-                  type="primary" 
-                  size="small" 
-                  :disabled="!editForm.avatarId || !editingTitle"
-                  @click="handleUpdateTitle"
-                >
-                  更新标题
-                </el-button>
-              </div>
-            </div>
-            
-            <div style="display: flex; gap: 20px;">
-              <div class="avatar-list" v-loading="avatarLoading">
-                <p class="avatar-hint">选择一个头像：</p>
-                <div class="avatar-upload">
-                  <el-upload
-                    class="avatar-uploader"
-                    :auto-upload="false"
-                    :show-file-list="false"
-                    accept="image/*"
-                    @change="handleAvatarChange"
-                  >
-                    <el-button type="primary" :icon="Plus">上传新头像</el-button>
-                  </el-upload>
-                </div>
-                <div class="avatar-grid">
-                  <div 
-                    v-for="avatar in avatars" 
-                    :key="avatar.avatarId" 
-                    class="avatar-item"
-                    :class="{ 'selected': editForm.avatarId === avatar.avatarId }"
-                    @click="editForm.avatarId = avatar.avatarId"
-                  >
-                    <el-avatar 
-                      :size="50" 
-                      :src="avatar.avatarUrl || ''"
-                      shape="square"
-                    ></el-avatar>
-                    <div class="avatar-item-title">{{ avatar.avatarTitle || '未命名' }}</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 显示精灵图 -->
-              <div class="sprite-display" v-if="getSpriteUrl(editForm.avatarId)">
-                <h4>精灵图预览</h4>
-                <img :src="getSpriteUrl(editForm.avatarId)" class="sprite-image" alt="精灵图预览" />
-              </div>
-            </div>
-          </div>
+          <AvatarUploader
+            :role-id="props.role?.roleId || 0"
+            :avatars="avatars"
+            v-model:selected-avatar-id="editForm.avatarId"
+            :loading="avatarLoading"
+            @refresh="emit('refreshAvatars')"
+          />
         </el-form-item>
         
         <div class="form-actions">

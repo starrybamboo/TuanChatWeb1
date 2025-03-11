@@ -10,8 +10,6 @@ import RoleDetail from './components/RoleDetail.vue';
 import RoleForm from './components/RoleForm.vue';
 import RoleInfoPanel from './components/RoleInfoPanel.vue';
 import type { UserRole } from '@/api/models/UserRole';
-import type { UploadUrlReq } from '@/api/models/UploadUrlReq';
-import { tuanchat } from '@/api/instance';
 
 const roleStore = useRoleStore();
 const avatarStore = useAvatarStore();
@@ -28,72 +26,11 @@ const allAvatarsLoaded = ref(false);
 const isEditing = ref(false);
 const editForm = ref<UserRole | null>(null);
 const saveLoading = ref(false);
-const uploadLoading = ref(false);
-const selectedFile = ref<File | null>(null);
-const ossService = tuanchat.ossController;
 
-// 处理头像文件选择
 // 加载角色头像列表
 const loadRoleAvatars = async () => {
   if (editForm.value?.roleId) {
     await avatarStore.fetchRoleAvatars(editForm.value.roleId);
-  }
-};
-
-const handleAvatarUpload = async (file: File) => {
-  if (!file) return;
-  
-  // 验证文件类型
-  const isImage = file.type.startsWith('image/');
-  if (!isImage) {
-    ElMessage.error('请选择图片文件');
-    return;
-  }
-  
-  // 验证文件大小（限制为5MB）
-  const maxSize = 5 * 1024 * 1024;
-  if (file.size > maxSize) {
-    ElMessage.error('图片大小不能超过5MB');
-    return;
-  }
-  
-  selectedFile.value = file;
-  uploadLoading.value = true;
-  
-  try {
-    // 获取预上传地址
-    const uploadUrlReq: UploadUrlReq = {
-      fileName: file.name,
-      scene: 1 // 假设1代表头像场景
-    };
-    
-    const response = await ossService.getUploadUrl(uploadUrlReq);
-    if (response.data?.uploadUrl) {
-      // 上传文件到MinIO
-      const uploadResponse = await fetch(response.data.uploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type
-        }
-      });
-      
-      if (uploadResponse.ok) {
-        ElMessage.success('头像上传成功');
-        // 刷新头像列表
-        if (editForm.value?.roleId) {
-          await avatarStore.fetchRoleAvatars(editForm.value.roleId);
-        }
-      } else {
-        throw new Error('上传失败');
-      }
-    }
-  } catch (error) {
-    console.error('上传头像失败:', error);
-    ElMessage.error('上传头像失败');
-  } finally {
-    uploadLoading.value = false;
-    selectedFile.value = null;
   }
 };
 
@@ -422,7 +359,6 @@ onMounted(async () => {
             :avatar-loading="avatarLoading"
             @save="handleSaveRole"
             @cancel="handleCancelEdit"
-            @upload-avatar="handleAvatarUpload"
             @refresh-avatars="loadRoleAvatars"
           />
         </template>
