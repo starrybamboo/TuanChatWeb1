@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { Plus, Search } from '@element-plus/icons-vue';
+import { ElMessageBox } from 'element-plus';
 import type { UserRole } from '@/api/models/UserRole';
 import { useAvatarStore } from '@/stores/avatar';
 
@@ -8,11 +9,14 @@ interface Props {
   roles: UserRole[];
   activeRoleId: number | null;
   loading?: boolean;
+  isEditing?: boolean;
 }
 
 interface Emits {
   (e: 'select', roleId: number): void;
   (e: 'create'): void;
+  (e: 'saveBeforeSwitch', roleId: number): void;
+  (e: 'cancelAndSwitch', roleId: number): void;
 }
 
 const props = defineProps<Props>();
@@ -20,6 +24,33 @@ const emit = defineEmits<Emits>();
 const avatarStore = useAvatarStore();
 
 const searchQuery = ref('');
+
+// 处理角色选择
+const handleRoleSelect = async (roleId: number) => {
+  if (props.isEditing) {
+    try {
+      await ElMessageBox.confirm(
+        '是否保存当前编辑的内容？',
+        '切换角色',
+        {
+          confirmButtonText: '保存',
+          cancelButtonText: '不保存',
+          type: 'warning',
+        }
+      );
+      // 用户点击保存
+      emit('saveBeforeSwitch', roleId);
+    } catch (error) {
+      if (error === 'cancel') {
+        // 用户点击不保存
+        emit('cancelAndSwitch', roleId);
+      }
+    }
+  } else {
+    // 非编辑状态直接切换
+    emit('select', roleId);
+  }
+};
 
 // 过滤角色列表
 const filteredRoles = computed(() => {
@@ -57,7 +88,7 @@ const getAvatarUrl = (avatarId: number | undefined) => {
         :key="role.roleId" 
         class="role-item"
         :class="{ 'active': role.roleId === activeRoleId }"
-        @click="role.roleId && emit('select', role.roleId)"
+        @click="role.roleId && handleRoleSelect(role.roleId)"
       >
         <div class="role-avatar">
           <el-avatar 

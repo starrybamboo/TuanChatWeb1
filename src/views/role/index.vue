@@ -128,8 +128,10 @@ const handleEditRole = async (role: UserRole) => {
   editForm.value = { ...role };
   isEditing.value = true;
   
-  // 确保在编辑模式下加载当前角色的头像数据
+  // 更新路由，添加编辑状态参数
   if (role.roleId) {
+    router.push(`/role/${role.roleId}?edit=true`);
+    
     avatarLoading.value = true;
     try {
       await avatarStore.fetchRoleAvatars(role.roleId);
@@ -146,6 +148,13 @@ const handleEditRole = async (role: UserRole) => {
 const handleCancelEdit = () => {
   isEditing.value = false;
   editForm.value = null;
+  
+  // 移除编辑状态参数，返回到角色详情页
+  if (activeRoleId.value) {
+    router.push(`/role/${activeRoleId.value}`);
+  } else {
+    router.push('/role');
+  }
 };
 
 // 保存角色编辑
@@ -161,6 +170,8 @@ const handleSaveRole = async (updatedRole: UserRole) => {
       editForm.value = null;
       await fetchRoles();
       if (activeRoleId.value === result.roleId) {
+        // 更新路由，移除编辑状态
+        router.push(`/role/${result.roleId}`);
         await handleSelectRole(result.roleId);
       }
     } else {
@@ -228,6 +239,21 @@ const handleSelectRole = async (roleId: number) => {
   }
 };
 
+// 处理保存后切换角色
+const handleSaveBeforeSwitch = async (roleId: number) => {
+  if (editForm.value) {
+    await handleSaveRole(editForm.value);
+    handleSelectRole(roleId);
+  }
+};
+
+// 处理不保存直接切换角色
+const handleCancelAndSwitch = (roleId: number) => {
+  isEditing.value = false;
+  editForm.value = null;
+  handleSelectRole(roleId);
+};
+
 // 切换右侧面板显示/隐藏
 const toggleRightPanel = () => {
   showRightPanel.value = !showRightPanel.value;
@@ -263,6 +289,21 @@ watch(() => route.params.roleId, async (newRoleId) => {
   }
 });
 
+// 监听路由查询参数变化，处理编辑状态
+watch(() => route.query.edit, (isEditMode) => {
+  if (isEditMode === 'true' && activeRole.value) {
+    // 如果URL中有edit=true参数且有活动角色，进入编辑模式
+    if (!isEditing.value) {
+      editForm.value = { ...activeRole.value };
+      isEditing.value = true;
+    }
+  } else if (isEditing.value) {
+    // 如果URL中没有edit参数但当前是编辑模式，退出编辑模式
+    isEditing.value = false;
+    editForm.value = null;
+  }
+});
+
 // 预加载所有角色的头像
 const preloadAllAvatars = async () => {
   if (roles.value.length === 0 || allAvatarsLoaded.value) return;
@@ -292,6 +333,16 @@ onMounted(async () => {
     const roleId = parseInt(routeRoleId as string);
     if (!isNaN(roleId)) {
       activeRoleId.value = roleId;
+      
+      // 检查是否有编辑参数
+      if (route.query.edit === 'true') {
+        // 等待角色数据加载完成
+        await nextTick();
+        if (activeRole.value) {
+          editForm.value = { ...activeRole.value };
+          isEditing.value = true;
+        }
+      }
     }
   }
   // 不再自动选择第一个角色，保持URL为/role
@@ -326,8 +377,11 @@ onMounted(async () => {
         :roles="roles"
         :active-role-id="activeRoleId"
         :loading="loading"
+        :is-editing="isEditing"
         @select="handleSelectRole"
         @create="handleCreateRole"
+        @save-before-switch="handleSaveBeforeSwitch"
+        @cancel-and-switch="handleCancelAndSwitch"
       />
       
       <!-- 中间内容区域 -->
