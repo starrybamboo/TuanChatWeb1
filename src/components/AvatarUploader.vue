@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue';
+import {ref, watch, nextTick} from 'vue';
 import { Plus } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import type { RoleAvatar } from '@/api/models/RoleAvatar';
 import type { RoleAvatarCreateRequest, RoleAvatarRequest, UploadUrlReq } from '@/api';
 import { tuanchat } from '@/api/instance';
 import { useAvatarStore } from '@/stores/avatar';
+import 'vue-cropper/dist/index.css'
+import { VueCropper } from 'vue-cropper'
 
 interface Props {
   roleId: number;
@@ -25,6 +27,59 @@ const emit = defineEmits<Emits>();
 // 头像标题编辑
 const editingTitle = ref('');
 
+// 裁剪相关的状态
+const showCropDialog = ref(false);
+const currentFile = ref<File | null>(null);
+const cropBoxData = ref<any>(null);
+const cropper = ref<any>(null);
+const cropperReady = ref(false);
+
+// 裁剪器配置
+const cropperOption = ref({
+  img: '',
+  outputSize: 1,
+  outputType: 'jpeg',
+  info: true,
+  canScale: true,
+  autoCrop: true,
+  autoCropWidth: 300,
+  autoCropHeight: 300,
+  fixed: true,
+  fixedNumber: [1, 1],
+  full: false,
+  fixedBox: false,
+  canMove: true,
+  canMoveBox: true,
+  original: false,
+  centerBox: true,
+  high: true,
+  infoTrue: true,
+  maxImgSize: 2000,
+  enlarge: 1,
+  mode: 'contain'
+});
+
+// 记录裁剪框位置
+const saveCropBoxData = () => {
+  if (cropper.value && cropperReady.value) {
+    cropBoxData.value = cropper.value.getCropBoxData();
+  }
+};
+
+// 恢复裁剪框位置
+const restoreCropBoxData = () => {
+  if (cropper.value && cropBoxData.value && cropperReady.value) {
+    cropper.value.setCropBoxData(cropBoxData.value);
+  }
+};
+
+// 处理裁剪器就绪
+const handleCropperReady = () => {
+  cropperReady.value = true;
+  nextTick(() => {
+    restoreCropBoxData();
+  });
+};
 const avatarStore = useAvatarStore();
 
 // 监听选中的头像ID变化
@@ -74,18 +129,51 @@ const handleAvatarChange = async (uploadFile: any) => {
   // 验证文件类型和大小
   if (!validateFile(file)) return;
   
+  // 重置裁剪器状态
+  cropperReady.value = false;
+  
+  // 显示裁剪对话框
+  currentFile.value = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    cropperOption.value.img = e.target?.result as string;
+    showCropDialog.value = true;
+  };
+  reader.readAsDataURL(file);
+};
+
+// 处理裁剪完成
+const handleCropFinish = async () => {
+  if (!currentFile.value || !cropper.value) return;
+  
   try {
-    // 上传精灵图和头像
-    const { avatarUrl, spriteUrl } = await uploadImages(file);
+    // 保存裁剪框位置
+    saveCropBoxData();
+    
+    // 获取裁剪后的图片blob数据
+    const cropBlob = await new Promise<Blob>((resolve) => {
+      cropper.value.getCropBlob((blob: Blob) => resolve(blob));
+    });
+    
+    // 转换为File对象
+    const croppedFile = new File([cropBlob], `avatar_${currentFile.value.name}`, {
+      type: cropBlob.type
+    });
+    
+    // 上传精灵图和头像（使用原始图片作为精灵图）
+    const { avatarUrl, spriteUrl } = await uploadImages(croppedFile, currentFile.value);
     
     // 创建头像记录
     if (props.roleId) {
       const avatarId = await createAvatarRecord();
       if (avatarId) {
-        await updateAvatarInfo(avatarId, file.name || '未命名', avatarUrl || '', spriteUrl || '');
+        await updateAvatarInfo(avatarId, currentFile.value.name || '未命名', avatarUrl || '', spriteUrl || '');
         emit('refresh');
       }
     }
+    
+    // 关闭裁剪对话框
+    showCropDialog.value = false;
   } catch (error) {
     console.error('上传头像失败:', error);
     ElMessage.error(error instanceof Error ? error.message : '上传头像失败');
@@ -110,10 +198,10 @@ const validateFile = (file: File) => {
 };
 
 // 上传图片
-const uploadImages = async (file: File) => {
-  // 上传精灵图
+const uploadImages = async (avatarFile: File, spriteFile: File) => {
+  // 上传精灵图（使用原始图片）
   const spriteUploadReq: UploadUrlReq = {
-    fileName: `sprite_${file.name}`,
+    fileName: `sprite_${spriteFile.name}`,
     scene: 2
   };
   
@@ -122,11 +210,11 @@ const uploadImages = async (file: File) => {
     throw new Error('获取精灵图上传地址失败');
   }
   
-  await uploadFile(spriteResponse.data.uploadUrl, file);
+  await uploadFile(spriteResponse.data.uploadUrl, spriteFile);
   
-  // 上传头像
+  // 上传头像（使用裁剪后的图片）
   const avatarUploadReq: UploadUrlReq = {
-    fileName: `avatar_${file.name}`,
+    fileName: `avatar_${avatarFile.name}`,
     scene: 1
   };
   
@@ -135,7 +223,7 @@ const uploadImages = async (file: File) => {
     throw new Error('获取头像上传地址失败');
   }
   
-  await uploadFile(avatarResponse.data.uploadUrl, file);
+  await uploadFile(avatarResponse.data.uploadUrl, avatarFile);
   
   return {
     avatarUrl: avatarResponse.data.downloadUrl,
@@ -272,6 +360,47 @@ const getSpriteUrl = (avatarId: number) => {
       </div>
     </div>
   </div>
+  <!-- 裁剪对话框 -->
+  <el-dialog
+    v-model="showCropDialog"
+    title="裁剪头像"
+    width="600px"
+    destroy-on-close
+  >
+    <div style="height: 400px;">
+      <vue-cropper
+        ref="cropper"
+        :img="cropperOption.img"
+        :outputSize="cropperOption.outputSize"
+        :outputType="cropperOption.outputType"
+        :info="cropperOption.info"
+        :canScale="cropperOption.canScale"
+        :autoCrop="cropperOption.autoCrop"
+        :autoCropWidth="cropperOption.autoCropWidth"
+        :autoCropHeight="cropperOption.autoCropHeight"
+        :fixed="cropperOption.fixed"
+        :fixedNumber="cropperOption.fixedNumber"
+        :full="cropperOption.full"
+        :fixedBox="cropperOption.fixedBox"
+        :canMove="cropperOption.canMove"
+        :canMoveBox="cropperOption.canMoveBox"
+        :original="cropperOption.original"
+        :centerBox="cropperOption.centerBox"
+        :high="cropperOption.high"
+        :infoTrue="cropperOption.infoTrue"
+        :maxImgSize="cropperOption.maxImgSize"
+        :enlarge="cropperOption.enlarge"
+        @ready="handleCropperReady"
+      />
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="showCropDialog = false">取消</el-button>
+        <el-button type="primary" @click="handleCropFinish">确定</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  
 </template>
 
 <style scoped>
