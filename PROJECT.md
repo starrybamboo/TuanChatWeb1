@@ -49,10 +49,10 @@ resolve: {
 
 - 已创建 Pinia 实例并配置到 Vue 应用
 - 状态管理相关代码位于 `src/stores` 目录
-- 实现了用户状态管理，包括：
-  - Token 管理和持久化
-  - 用户登录状态维护
-  - 用户信息存储
+- 实现了多个状态管理模块：
+  - 用户状态（user.ts）：Token管理和用户信息
+  - 角色状态（role.ts）：角色列表和当前角色
+  - 头像状态（avatar.ts）：头像管理和URL映射
 
 ## 用户认证系统
 
@@ -110,9 +110,29 @@ resolve: {
 - 推荐页（/feed）：展示推荐内容
 - 社区页（/community）：社区交流功能
 - 游玩页（/play）：游戏相关功能
-- 角色页（/role）：角色相关功能
+- 角色页（/role）：角色管理和展示
 - 模组页（/module）：模组相关功能
 - 创作页（/create）：创作者功能
+
+## 角色系统
+
+### 角色管理
+
+实现了完整的角色管理功能：
+
+- 角色列表展示
+- 角色创建和编辑
+- 当前角色切换
+- 角色状态同步
+
+### 头像系统
+
+集成了角色头像管理功能：
+
+- 头像存储和缓存
+- 头像URL映射管理
+- 精灵图（Sprite）支持
+- 头像标题管理
 
 ## API 接口
 
@@ -142,18 +162,26 @@ resolve: {
 │   │   ├── services/        # API服务接口定义
 │   │   └── index.ts         # API模块入口文件
 │   ├── assets/              # 项目资源文件
-│   │   └── vue.svg         # Vue logo图标
 │   ├── components/          # Vue组件目录
 │   │   └── LoginDialog.vue  # 登录对话框组件
 │   ├── layouts/             # 布局组件目录
-│   │   └── AppLayout.vue   # 全局布局组件
+│   │   └── AppLayout.vue    # 全局布局组件
 │   ├── stores/              # Pinia状态管理
-│   │   ├── user.ts         # 用户状态管理
-│   │   └── index.ts        # 状态管理入口文件
+│   │   ├── avatar.ts        # 头像状态管理
+│   │   ├── role.ts          # 角色状态管理
+│   │   ├── user.ts          # 用户状态管理
+│   │   └── index.ts         # 状态管理入口文件
+│   ├── views/               # 页面视图组件
+│   │   ├── community/       # 社区页面
+│   │   ├── create/          # 创作页面
+│   │   ├── feed/            # 推荐页面
+│   │   ├── module/          # 模组页面
+│   │   ├── play/            # 游玩页面
+│   │   └── role/            # 角色页面
 │   ├── App.vue              # 应用根组件
-│   ├── main.ts              # 应用入口文件，负责应用初始化
-│   ├── style.css           # 全局样式文件
-│   └── vite-env.d.ts       # Vite环境类型声明文件
+│   ├── main.ts              # 应用入口文件
+│   ├── style.css            # 全局样式文件
+│   └── vite-env.d.ts        # Vite环境类型声明文件
 ├── .vscode/                  # VSCode配置目录
 │   └── extensions.json      # 推荐的VSCode扩展配置
 ├── index.html               # 应用入口HTML文件
@@ -164,113 +192,6 @@ resolve: {
 ├── vite.config.ts           # Vite构建工具配置文件
 └── yarn.lock                # Yarn依赖版本锁定文件
 ```
-
-### 关键文件说明
-
-#### 配置文件
-- `vite.config.ts`: Vite构建工具配置文件
-  - 配置Vue插件支持
-  - 配置路径别名，将`@`指向`src`目录
-  - 其他构建和开发服务器相关配置
-
-- `tsconfig.json`: TypeScript主配置文件
-  - 通过引用分离应用和Node.js的配置
-  - 引用`tsconfig.app.json`和`tsconfig.node.json`
-
-- `tsconfig.app.json`: 应用相关的TypeScript配置
-  - 继承自`@vue/tsconfig/tsconfig.dom.json`
-  - 配置严格的类型检查选项
-  - 配置路径别名`@/*`指向`src/*`
-  - 包含所有源代码文件（.ts、.tsx、.vue）
-
-- `tsconfig.node.json`: Node.js相关的TypeScript配置
-  - 配置构建工具相关的TypeScript选项
-  - 设置目标版本为ES2022
-  - 启用严格模式和其他代码质量检查
-  - 仅包含`vite.config.ts`
-
-- `package.json`: 项目配置和依赖管理
-  - 开发脚本：`dev`（启动开发服务器）
-  - 构建脚本：`build`（生产环境构建）
-  - 预览脚本：`preview`（预览生产构建）
-  - API生成脚本：`openapi`（生成API客户端代码）
-  - 核心依赖：Vue 3、Element Plus、Pinia
-  - 开发依赖：TypeScript、Vite、Vue-tsc等
-
-#### 源代码目录（src/）
-
-##### 核心文件
-- `main.ts`: 应用程序入口文件
-  - 创建Vue应用实例
-  - 配置Element Plus及其图标组件
-  - 配置Pinia状态管理
-  - 配置API客户端基础路径（/capi）
-
-- `App.vue`: 应用根组件
-  - 页面整体布局和结构
-  - 集成示例组件和Logo展示
-  - 基础样式设置
-
-- `style.css`: 全局样式文件
-  - 定义全局CSS变量和样式
-  - 设置基础样式规则
-
-##### API模块（api/）
-- `index.ts`: API模块入口文件
-  - 导出所有API相关类型和接口
-  - 导出核心功能（ApiError、CancelablePromise等）
-  - 导出OpenAPI配置和类型定义
-- `core/`: API核心功能实现
-  - API错误处理
-  - 请求取消功能
-  - OpenAPI基础配置
-- `models/`: API数据模型定义
-  - 请求和响应数据类型
-  - 业务实体模型定义
-- `services/`: API服务接口定义
-  - 各个业务模块的API封装
-  - RESTful接口实现
-
-##### 状态管理（stores/）
-- `index.ts`: Pinia状态管理入口文件
-  - 创建Pinia实例
-  - 配置Pinia插件
-  - 提供状态管理初始化函数
-- `user.ts`: 用户状态管理
-  - Token管理和持久化
-  - 用户登录状态维护
-  - 用户信息存储
-
-##### 组件（components/）
-- `LoginDialog.vue`: 登录对话框组件
-  - 用户登录表单
-  - 表单验证逻辑
-  - 登录状态提示
-
-##### 布局组件（layouts/）
-- `AppLayout.vue`: 全局布局组件
-  - 实现顶部导航栏
-  - 管理页面整体布局
-  - 集成用户功能区域
-
-##### 资源文件（assets/）
-- `vue.svg`: Vue.js Logo图标
-  - 用于页面展示
-  - 支持hover效果
-
-#### 静态资源（public/）
-- `tuanchat.openapi.json`: OpenAPI接口定义文件
-  - 定义API接口规范
-  - 用于生成TypeScript API客户端代码
-- `favicon.ico`: 网站图标
-- `vite.svg`: Vite Logo图标
-
-## 功能模块
-
-项目包含多个核心功能模块，每个模块都有详细的说明文档：
-
-- [角色模块](./doc/模块说明/角色模块.md)：角色创建、管理和使用功能
-- [聊天界面模块](./doc/模块说明/聊天界面模块.md)：Discord风格的聊天界面实现
 
 ## 开发命令
 

@@ -23,6 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/role/index.vue')
   },
   {
+    path: '/role/:roleId',
+    name: 'roleDetail',
+    component: () => import('@/views/role/index.vue')
+  },
+  {
     path: '/module',
     name: 'module',
     component: () => import('@/views/module/index.vue')
