@@ -9,19 +9,18 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class OssControllerService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
-     * @param req
+     * @param requestBody
      * @returns ApiResultOssResp OK
      * @throws ApiError
      */
     public getUploadUrl(
-        req: UploadUrlReq,
+        requestBody?: UploadUrlReq,
     ): CancelablePromise<ApiResultOssResp> {
         return this.httpRequest.request({
-            method: 'GET',
+            method: 'POST',
             url: '/capi/oss/upload/url',
-            query: {
-                'req': req,
-            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 405: `Method Not Allowed`,

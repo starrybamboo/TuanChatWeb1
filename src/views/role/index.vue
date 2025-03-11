@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useRoleStore } from '@/stores/role';
 import { useAvatarStore } from '@/stores/avatar';
@@ -33,6 +33,13 @@ const selectedFile = ref<File | null>(null);
 const ossService = tuanchat.ossController;
 
 // 处理头像文件选择
+// 加载角色头像列表
+const loadRoleAvatars = async () => {
+  if (editForm.value?.roleId) {
+    await avatarStore.fetchRoleAvatars(editForm.value.roleId);
+  }
+};
+
 const handleAvatarUpload = async (file: File) => {
   if (!file) return;
   
@@ -290,10 +297,22 @@ watch(() => route.params.roleId, async (newRoleId) => {
 });
 
 // 监听路由查询参数变化，处理编辑状态
-watch(() => route.query.edit, (isEditMode) => {
+watch(() => route.query.edit, async (isEditMode) => {
   if (isEditMode === 'true' && activeRole.value) {
     // 如果URL中有edit=true参数且有活动角色，进入编辑模式
     if (!isEditing.value) {
+      // 确保在进入编辑模式前加载头像数据
+      if (activeRole.value.roleId && !allAvatarsLoaded.value) {
+        avatarLoading.value = true;
+        try {
+          await avatarStore.fetchRoleAvatars(activeRole.value.roleId);
+        } catch (error) {
+          console.error('获取角色头像失败', error);
+          ElMessage.error('获取头像列表失败');
+        } finally {
+          avatarLoading.value = false;
+        }
+      }
       editForm.value = { ...activeRole.value };
       isEditing.value = true;
     }
@@ -404,6 +423,7 @@ onMounted(async () => {
             @save="handleSaveRole"
             @cancel="handleCancelEdit"
             @upload-avatar="handleAvatarUpload"
+            @refresh-avatars="loadRoleAvatars"
           />
         </template>
       </div>

@@ -1944,6 +1944,75 @@
         }
       }
     },
+    "/capi/oss/upload/url": {
+      "post": {
+        "tags": [
+          "oss-controller"
+        ],
+        "operationId": "getUploadUrl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadUrlReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultOssResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/capi/user/info": {
       "get": {
         "tags": [
@@ -2722,76 +2791,6 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResultListRoleAvatar"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/oss/upload/url": {
-      "get": {
-        "tags": [
-          "oss-controller"
-        ],
-        "operationId": "getUploadUrl",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UploadUrlReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultOssResp"
                 }
               }
             }
@@ -3806,6 +3805,54 @@
           }
         }
       },
+      "UploadUrlReq": {
+        "required": [
+          "fileName",
+          "scene"
+        ],
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "scene": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ApiResultOssResp": {
+        "required": [
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "errCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errMsg": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/OssResp"
+          }
+        }
+      },
+      "OssResp": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string"
+          },
+          "downloadUrl": {
+            "type": "string"
+          }
+        }
+      },
       "AddPostRequest": {
         "type": "object",
         "properties": {
@@ -4405,54 +4452,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/RoleAbilityTable"
-          }
-        }
-      },
-      "UploadUrlReq": {
-        "required": [
-          "fileName",
-          "scene"
-        ],
-        "type": "object",
-        "properties": {
-          "fileName": {
-            "type": "string"
-          },
-          "scene": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "ApiResultOssResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/OssResp"
-          }
-        }
-      },
-      "OssResp": {
-        "type": "object",
-        "properties": {
-          "uploadUrl": {
-            "type": "string"
-          },
-          "downloadUrl": {
-            "type": "string"
           }
         }
       },
