@@ -95,6 +95,27 @@ watch(
   { immediate: true } // 这里添加第三个参数作为配置对象
 );
 
+// 监听avatars数组变化，确保在数据刷新后能更新标题
+watch(
+  () => props.avatars,
+  (newAvatars) => {
+    console.log('AvatarUploader: avatars changed', newAvatars);
+    console.log('AvatarUploader: avatars length', newAvatars.length);
+    console.log('AvatarUploader: roleId', props.roleId);
+    
+    // 检查头像数组是否为空或未定义
+    if (newAvatars.length === 0) {
+      console.warn('AvatarUploader: 没有可用的头像数据');
+    }
+    
+    if (props.selectedAvatarId) {
+      // 当avatars数据更新时，重新获取当前选中头像的标题
+      editingTitle.value = avatarStore.getAvatarTitle(props.selectedAvatarId) || '';
+    }
+  },
+  { deep: true, immediate: true } // 添加immediate:true确保组件挂载时立即执行
+);
+
 // 更新头像标题
 const handleUpdateTitle = async () => {
   if (!props.selectedAvatarId || !props.roleId) return;
@@ -280,14 +301,24 @@ const updateAvatarInfo = async (avatarId: number, title: string, avatarUrl: stri
 
 // 获取头像URL
 const getAvatarUrl = (avatarId: number) => {
+  // 首先尝试从avatarStore获取，这样即使props.avatars没有正确加载，也能显示头像
+  const storeUrl = avatarStore.getAvatarUrl(avatarId);
+  if (storeUrl) return storeUrl;
+  
+  // 如果store中没有，再从props.avatars中查找
   const avatar = props.avatars.find(a => a.avatarId === avatarId);
   return avatar?.avatarUrl || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
 };
 
 // 获取精灵图URL
 const getSpriteUrl = (avatarId: number) => {
+  // 首先尝试从avatarStore获取
+  const storeUrl = avatarStore.getSpriteUrl(avatarId);
+  if (storeUrl) return storeUrl;
+  
+  // 如果store中没有，再从props.avatars中查找
   const avatar = props.avatars.find(a => a.avatarId === avatarId);
-  return avatar?.spriteUrl || '';
+  return avatar?.spriteUrl || ''
 };
 </script>
 
@@ -335,7 +366,7 @@ const getSpriteUrl = (avatarId: number) => {
             <el-button type="primary" :icon="Plus">上传新头像</el-button>
           </el-upload>
         </div>
-        <div class="avatar-grid">
+        <div class="avatar-grid" v-if="props.avatars && props.avatars.length > 0">
           <div 
             v-for="avatar in props.avatars" 
             :key="avatar.avatarId" 
@@ -345,11 +376,18 @@ const getSpriteUrl = (avatarId: number) => {
           >
             <el-avatar 
               :size="50" 
-              :src="avatar.avatarUrl || ''"
+              :src="getAvatarUrl(avatar.avatarId || 0)"
               shape="square"
-            ></el-avatar>
+            >
+              {{ avatar.avatarTitle ? avatar.avatarTitle.charAt(0) : 'A' }}
+            </el-avatar>
             <div class="avatar-item-title">{{ avatar.avatarTitle || '未命名' }}</div>
           </div>
+        </div>
+        <div v-else class="empty-avatar-grid">
+          <p>暂无头像，请上传新头像</p>
+          <p class="debug-info">传入的头像数组: {{ props.avatars }}</p>
+          <p class="debug-info">角色ID: {{ props.roleId }}</p>
         </div>
       </div>
 

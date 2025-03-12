@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { Check, Close } from '@element-plus/icons-vue';
 import type { UserRole } from '@/api/models/UserRole';
 import type { RoleAvatar } from '@/api/models/RoleAvatar';
@@ -41,9 +41,24 @@ const handleSave = () => {
 onMounted(() => {
   // 当进入编辑模式时，立即触发头像刷新
   if (props.role?.roleId) {
+    console.log('RoleForm mounted, refreshing avatars for roleId:', props.role.roleId);
     emit('refreshAvatars');
   }
 });
+
+// 监听role变化，确保在角色变化时刷新头像
+watch(() => props.role, (newRole) => {
+  if (newRole?.roleId) {
+    console.log('RoleForm: role changed, refreshing avatars for roleId:', newRole.roleId);
+    emit('refreshAvatars');
+  }
+}, { deep: true, immediate: true });
+
+// 监听avatars变化，确保在数据更新时能够刷新
+watch(() => props.avatars, (newAvatars) => {
+  console.log('RoleForm: avatars changed', newAvatars);
+}, { deep: true });
+
 </script>
 
 <template>
@@ -68,6 +83,11 @@ onMounted(() => {
         </el-form-item>
         
         <el-form-item label="角色头像">
+          <div class="debug-info">
+            <p>当前角色ID: {{ props.role?.roleId }}</p>
+            <p>当前头像ID: {{ editForm.avatarId }}</p>
+            <p>可用头像数量: {{ avatars.length }}</p>
+          </div>
           <AvatarUploader
             :role-id="props.role?.roleId || 0"
             :avatars="avatars"

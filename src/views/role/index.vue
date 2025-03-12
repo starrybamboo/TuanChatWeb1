@@ -29,8 +29,24 @@ const saveLoading = ref(false);
 
 // 加载角色头像列表
 const loadRoleAvatars = async () => {
-  if (editForm.value?.roleId) {
-    await avatarStore.fetchRoleAvatars(editForm.value.roleId);
+  // 获取当前编辑的角色ID，如果没有则使用当前活动角色ID
+  const roleId = editForm.value?.roleId || activeRoleId.value;
+  
+  if (roleId) {
+    avatarLoading.value = true;
+    try {
+      console.log('正在加载角色ID为', roleId, '的头像列表');
+      await avatarStore.fetchRoleAvatars(roleId);
+      console.log('角色头像加载成功，当前头像列表:', avatarStore.avatars);
+      console.log('可用头像列表:', availableAvatars.value);
+    } catch (error) {
+      console.error('获取角色头像失败', error);
+      ElMessage.error('获取头像列表失败');
+    } finally {
+      avatarLoading.value = false;
+    }
+  } else {
+    console.warn('无法加载头像：未找到有效的角色ID');
   }
 };
 
@@ -216,8 +232,12 @@ const activeRoleAvatarUrl = computed(() => {
 
 // 获取所有可用的头像
 const availableAvatars = computed(() => {
-  // 返回所有头像，不再过滤角色ID
-  return avatarStore.avatars;
+  // 确保只返回当前选中角色的头像
+  const currentRoleId = editForm.value?.roleId || activeRoleId.value;
+  if (!currentRoleId) return [];
+  
+  // 从store中获取头像并过滤出当前角色的头像
+  return avatarStore.avatars.filter(avatar => avatar.roleId === currentRoleId);
 });
 
 // 监听路由参数变化
@@ -283,12 +303,30 @@ const preloadAllAvatars = async () => {
 onMounted(async () => {
   await fetchRoles();
   
+    // 预加载所有角色的头像
+    await preloadAllAvatars();
+    
   // 检查URL中是否有角色ID
   const routeRoleId = route.params.roleId;
   if (routeRoleId) {
     const roleId = parseInt(routeRoleId as string);
     if (!isNaN(roleId)) {
       activeRoleId.value = roleId;
+      
+      // 无论是否编辑模式，都先加载头像数据
+      if (activeRole.value && activeRole.value.roleId) {
+        avatarLoading.value = true;
+        try {
+          console.log('正在加载角色头像数据...');
+          await avatarStore.fetchRoleAvatars(activeRole.value.roleId);
+          console.log('头像数据加载成功:', avatarStore.avatars);
+        } catch (error) {
+          console.error('获取角色头像失败', error);
+          ElMessage.error('获取头像列表失败');
+        } finally {
+          avatarLoading.value = false;
+        }
+      }
       
       // 检查是否有编辑参数
       if (route.query.edit === 'true') {
@@ -303,9 +341,6 @@ onMounted(async () => {
   }
   // 不再自动选择第一个角色，保持URL为/role
   // 只有当URL中有roleId参数时才选择角色
-  
-  // 预加载所有角色的头像
-  await preloadAllAvatars();
 });
 </script>
 
