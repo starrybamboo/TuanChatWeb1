@@ -10,9 +10,6 @@ const servers = ref([
   { id: 5, name: '电影讨论', icon: '🎬', hasNotification: true },
 ]);
 
-// 当前选中的服务器ID
-const activeServerId = ref(1);
-
 // 频道分类和频道列表
 const channelCategories = ref([
   {
@@ -62,7 +59,7 @@ const newMessage = ref('');
 const showMemberList = ref(true);
 
 // 切换频道分类展开/折叠状态
-const toggleCategory = (categoryId) => {
+const toggleCategory = (categoryId: number) => {
   const category = channelCategories.value.find(c => c.id === categoryId);
   if (category) {
     category.isExpanded = !category.isExpanded;
@@ -70,7 +67,7 @@ const toggleCategory = (categoryId) => {
 };
 
 // 切换频道
-const switchChannel = (channelId) => {
+const switchChannel = (channelId: number) => {
   // 重置之前选中的频道
   channelCategories.value.forEach(category => {
     category.channels.forEach(channel => {

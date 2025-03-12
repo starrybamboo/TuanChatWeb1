@@ -23,16 +23,16 @@ const emit = defineEmits<Emits>();
       <div class="detail-title">
         <el-avatar 
           :size="24" 
-          :src="avatarUrl"
+          :src="props.avatarUrl"
           shape="square"
         >
-          {{ role.roleName ? role.roleName.charAt(0) : 'R' }}
+          {{ props.role.roleName ? props.role.roleName.charAt(0) : 'R' }}
         </el-avatar>
-        <span>{{ role.roleName || '未命名角色' }}</span>
+        <span>{{ props.role.roleName || '未命名角色' }}</span>
       </div>
       <div class="detail-actions">
         <el-button :icon="ChatDotRound" circle @click="emit('togglePanel')" />
-        <el-button :icon="Setting" circle @click="emit('edit', role)" />
+        <el-button :icon="Setting" circle @click="emit('edit', props.role)" />
       </div>
     </div>
     
@@ -42,25 +42,25 @@ const emit = defineEmits<Emits>();
           <div class="role-avatar">
             <el-avatar 
               :size="64" 
-              :src="avatarUrl"
+              :src="props.avatarUrl"
               shape="square"
             >
-              {{ role.roleName ? role.roleName.charAt(0) : 'R' }}
+              {{ props.role.roleName ? props.role.roleName.charAt(0) : 'R' }}
             </el-avatar>
           </div>
           <div class="role-info">
-            <h3 class="role-name">{{ role.roleName || '未命名角色' }}</h3>
-            <p class="role-create-time">创建时间: {{ role.createTime ? new Date(role.createTime).toLocaleDateString() : '未知' }}</p>
+            <h3 class="role-name">{{ props.role.roleName || '未命名角色' }}</h3>
+            <p class="role-create-time">创建时间: {{ props.role.createTime ? new Date(props.role.createTime).toLocaleDateString() : '未知' }}</p>
           </div>
         </div>
         
         <div class="role-card-body">
-          <p class="role-description">{{ role.description || '暂无描述' }}</p>
+          <p class="role-description">{{ props.role.description || '暂无描述' }}</p>
         </div>
         
         <div class="role-card-footer">
-          <el-button type="primary" text :icon="Edit" @click="emit('edit', role)">编辑</el-button>
-          <el-button type="danger" text :icon="Delete" @click="emit('delete', role)">删除</el-button>
+          <el-button type="primary" text :icon="Edit" @click="emit('edit', props.role)">编辑</el-button>
+          <el-button type="danger" text :icon="Delete" @click="emit('delete', props.role)">删除</el-button>
         </div>
       </el-card>
     </div>

@@ -52,12 +52,12 @@ const sortOptions = ref(['热门', '最新', '最多评论', '最多点赞'])
 const selectedSort = ref('热门')
 
 // 切换加入状态
-const toggleJoin = (post) => {
+const toggleJoin = (post: {isJoined: boolean}) => {
   post.isJoined = !post.isJoined
 }
 
 // 切换社区加入状态
-const toggleCommunityJoin = (community) => {
+const toggleCommunityJoin = (community: {isJoined: boolean}) => {
   community.isJoined = !community.isJoined
 }
 </script>
