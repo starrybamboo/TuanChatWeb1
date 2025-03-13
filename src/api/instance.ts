@@ -3,7 +3,7 @@ import { useUserStore } from '@/stores/user';
 
 // 创建OpenAPI实例
 export const tuanchat = new TuanChat({
-    BASE: 'http://localhost:8081',
+    BASE: import.meta.env.VITE_API_BASE_URL,
     WITH_CREDENTIALS: true,
     CREDENTIALS: 'include',
     TOKEN: async () => {

@@ -5,6 +5,7 @@
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite --open",
+    "dev:prod": "vite --open --mode production",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "openapi": "openapi --input ./public/tuanchat_OpenAPI.json --output ./src/api --client axios --name TuanChat",
