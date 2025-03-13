@@ -2,17 +2,20 @@
   "name": "tuanchatweb",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "vite --open",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "openapi": "openapi --input ./public/tuanchat_OpenAPI.json --output ./src/api --client axios --name TuanChat"
+    "openapi": "openapi --input ./public/tuanchat_OpenAPI.json --output ./src/api --client axios --name TuanChat",
+    "electron:dev": "electron .",
+    "electron:build": "vite build & electron-builder build --config electron-builder.json"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.8.1",
     "cropperjs": "^2.0.0",
+    "electron-reload": "^2.0.0-alpha.1",
     "element-plus": "^2.9.5",
     "form-data": "^4.0.2",
     "openapi-typescript-codegen": "^0.29.0",
@@ -24,7 +27,6 @@
   "devDependencies": {
     "@types/node": "^22.13.9",
     "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/cli-service": "^5.0.8",
     "@vue/tsconfig": "^0.7.0",
     "electron": "^35.0.1",
     "electron-builder": "^25.1.8",
