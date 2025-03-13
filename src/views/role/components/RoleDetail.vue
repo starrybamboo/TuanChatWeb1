@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChatDotRound, Setting, Edit, Delete } from '@element-plus/icons-vue';
+import { Setting, Edit, Delete } from '@element-plus/icons-vue';
 import type { UserRole } from '@/api/models/UserRole';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 interface Emits {
   (e: 'edit', role: UserRole): void;
   (e: 'delete', role: UserRole): void;
-  (e: 'togglePanel'): void;
+  
 }
 
 const props = defineProps<Props>();
@@ -31,7 +31,6 @@ const emit = defineEmits<Emits>();
         <span>{{ props.role.roleName || '未命名角色' }}</span>
       </div>
       <div class="detail-actions">
-        <el-button :icon="ChatDotRound" circle @click="emit('togglePanel')" />
         <el-button :icon="Setting" circle @click="emit('edit', props.role)" />
       </div>
     </div>

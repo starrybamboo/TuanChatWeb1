@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useRoleStore } from '@/stores/role';
 import { useAvatarStore } from '@/stores/avatar';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Star, User, Picture, Setting } from '@element-plus/icons-vue';
+import { ChatDotRound } from '@element-plus/icons-vue';
 import RoleList from './components/RoleList.vue';
 import RoleDetail from './components/RoleDetail.vue';
 import RoleForm from './components/RoleForm.vue';
@@ -21,11 +21,13 @@ const activeRoleId = ref<number | null>(null);
 const showRightPanel = ref(true);
 const avatarLoading = ref(false);
 const allAvatarsLoaded = ref(false);
+const roleFormRef = ref<InstanceType<typeof RoleForm> | null>(null);
 
 // 编辑相关的状态
 const isEditing = ref(false);
 const editForm = ref<UserRole | null>(null);
 const saveLoading = ref(false);
+const formIsDirty = ref(false);
 
 // 加载角色头像列表
 const loadRoleAvatars = async () => {
@@ -123,7 +125,13 @@ const handleSaveRole = async (updatedRole: UserRole) => {
   
   saveLoading.value = true;
   try {
-    const result = await roleStore.updateRole(updatedRole.roleId, updatedRole);
+    // 通过ref获取最新表单数据
+    const currentFormData = roleFormRef.value?.getCurrentFormData();
+    if (!currentFormData) {
+      throw new Error('无法获取最新表单数据');
+    }
+    
+    const result = await roleStore.updateRole(currentFormData.roleId, currentFormData);
     if (result) {
       ElMessage.success('角色更新成功');
       isEditing.value = false;
@@ -303,8 +311,8 @@ const preloadAllAvatars = async () => {
 onMounted(async () => {
   await fetchRoles();
   
-    // 预加载所有角色的头像
-    await preloadAllAvatars();
+  // 预加载所有角色的头像
+  await preloadAllAvatars();
     
   // 检查URL中是否有角色ID
   const routeRoleId = route.params.roleId;
@@ -338,9 +346,9 @@ onMounted(async () => {
         }
       }
     }
+  } else {
+    handleSelectRole(activeRoleId.value || 0);
   }
-  // 不再自动选择第一个角色，保持URL为/role
-  // 只有当URL中有roleId参数时才选择角色
 });
 </script>
 
@@ -354,10 +362,7 @@ onMounted(async () => {
         </div>
       </div>
       <div class="header-right">
-        <el-button :icon="Star" circle />
-        <el-button :icon="User" circle />
-        <el-button :icon="Picture" circle />
-        <el-button :icon="Setting" circle />
+        <el-button :icon="ChatDotRound" circle @click="toggleRightPanel" />
       </div>
     </div>
     
@@ -369,6 +374,7 @@ onMounted(async () => {
         :active-role-id="activeRoleId"
         :loading="loading"
         :is-editing="isEditing"
+        :form-is-dirty="formIsDirty"
         @select="handleSelectRole"
         @create="handleCreateRole"
         @save-before-switch="handleSaveBeforeSwitch"
@@ -387,6 +393,7 @@ onMounted(async () => {
             @toggle-panel="toggleRightPanel"
           />
           <RoleForm
+            ref="roleFormRef"
             v-else
             :role="editForm"
             :avatars="availableAvatars"
@@ -395,6 +402,7 @@ onMounted(async () => {
             @save="handleSaveRole"
             @cancel="handleCancelEdit"
             @refresh-avatars="loadRoleAvatars"
+            @form-dirty-change="formIsDirty = $event"
           />
         </template>
       </div>

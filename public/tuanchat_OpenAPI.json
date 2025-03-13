@@ -1957,7 +1957,8 @@
                 "$ref": "#/components/schemas/UploadUrlReq"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -1966,6 +1967,76 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResultOssResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/chat/message/page": {
+      "post": {
+        "tags": [
+          "chat-controller"
+        ],
+        "operationId": "getMsgPage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatMessagePageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultCursorPageBaseResponseChatMessageResponse"
                 }
               }
             }
@@ -3050,76 +3121,6 @@
         }
       }
     },
-    "/capi/chat/message/page": {
-      "get": {
-        "tags": [
-          "chat-controller"
-        ],
-        "operationId": "getMsgPage",
-        "parameters": [
-          {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/ChatMessagePageRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultCursorPageBaseResponseChatMessageResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/capi/user/friend": {
       "delete": {
         "tags": [
@@ -3916,6 +3917,116 @@
           }
         }
       },
+      "ChatMessagePageRequest": {
+        "required": [
+          "roomId"
+        ],
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResultCursorPageBaseResponseChatMessageResponse": {
+        "required": [
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "errCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errMsg": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CursorPageBaseResponseChatMessageResponse"
+          }
+        }
+      },
+      "ChatMessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "messageMark": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageMark"
+            }
+          }
+        }
+      },
+      "CursorPageBaseResponseChatMessageResponse": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "isLast": {
+            "type": "boolean"
+          },
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageResponse"
+            }
+          }
+        }
+      },
+      "MessageMark": {
+        "type": "object",
+        "properties": {
+          "messageMarkId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "messageId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "avatarId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "RoleAvatarCreateRequest": {
         "type": "object",
         "properties": {
@@ -4563,116 +4674,6 @@
           },
           "imageUrl": {
             "type": "string"
-          },
-          "createTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updateTime": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ChatMessagePageRequest": {
-        "required": [
-          "roomId"
-        ],
-        "type": "object",
-        "properties": {
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "ApiResultCursorPageBaseResponseChatMessageResponse": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/CursorPageBaseResponseChatMessageResponse"
-          }
-        }
-      },
-      "ChatMessageResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "$ref": "#/components/schemas/Message"
-          },
-          "messageMark": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MessageMark"
-            }
-          }
-        }
-      },
-      "CursorPageBaseResponseChatMessageResponse": {
-        "type": "object",
-        "properties": {
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "isLast": {
-            "type": "boolean"
-          },
-          "list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ChatMessageResponse"
-            }
-          }
-        }
-      },
-      "MessageMark": {
-        "type": "object",
-        "properties": {
-          "messageMarkId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "messageId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "userId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "roleId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "type": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "avatarId": {
-            "type": "integer",
-            "format": "int64"
           },
           "createTime": {
             "type": "string",

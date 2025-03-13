@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useChatStore } from '@/stores/chat'
+import { wsService } from '@/services/websocket'
 
 // 服务器列表数据
 const servers = ref([
@@ -84,30 +86,20 @@ const switchChannel = (channelId: number) => {
 };
 
 // 发送消息
-const sendMessage = () => {
-  if (newMessage.value.trim() === '') return;
+async function sendMessage() {
+  if (!newMessage.value.trim() || !chatStore.currentRoomId) return
   
-  const message = {
-    id: messages.value.length + 1,
-    userId: 1, // 假设当前用户是管理员
-    username: '管理员',
-    avatar: '👑',
+  await chatStore.sendMessage({
+    roomId: chatStore.currentRoomId,
     content: newMessage.value,
-    timestamp: '刚刚',
-    reactions: []
-  };
+    messageType: 1, // 文本消息
+    roleId: 0, // 需要从当前选择的角色中获取
+    avatarId: 0, // 需要从当前选择的角色中获取
+    body: {}
+  })
   
-  messages.value.push(message);
-  newMessage.value = '';
-  
-  // 自动滚动到底部
-  setTimeout(() => {
-    const messagesContainer = document.querySelector('.messages-container');
-    if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  }, 50);
-};
+  newMessage.value = ''
+}
 
 // 切换成员列表显示/隐藏
 const toggleMemberList = () => {
@@ -123,6 +115,73 @@ onMounted(() => {
     }
   }, 100);
 });
+
+const chatStore = useChatStore()
+const loading = ref(false)
+const hasMore = ref(true)
+
+// 初始化聊天
+async function initializeChat(roomId: number) {
+  chatStore.currentRoomId = roomId
+  loading.value = true
+  
+  try {
+    const result = await chatStore.loadMessages(roomId)
+    hasMore.value = !result?.isLast
+  } finally {
+    loading.value = false
+  }
+}
+
+// 加载更多消息
+async function loadMoreMessages() {
+  if (!hasMore.value || loading.value || !chatStore.currentRoomId) return
+  
+  loading.value = true
+  try {
+    const firstMessage = chatStore.messages[0]
+    if (firstMessage) {
+      const result = await chatStore.loadMessages(
+        chatStore.currentRoomId,
+        firstMessage.message.messageID
+      )
+      hasMore.value = !result?.isLast
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 监听滚动加载更多消息
+function handleScroll(e: Event) {
+  const target = e.target as HTMLElement
+  if (target.scrollTop === 0) {
+    loadMoreMessages()
+  }
+}
+
+onMounted(() => {
+  // 连接WebSocket
+  wsService.connect()
+  chatStore.initializeWebSocket()
+  
+  // 初始化默认房间的消息
+  initializeChat(1) // 假设默认房间ID为1
+  
+  const messagesContainer = document.querySelector('.messages-container')
+  if (messagesContainer) {
+    messagesContainer.addEventListener('scroll', handleScroll)
+  }
+})
+
+onUnmounted(() => {
+  wsService.disconnect()
+  
+  const messagesContainer = document.querySelector('.messages-container')
+  if (messagesContainer) {
+    messagesContainer.removeEventListener('scroll', handleScroll)
+  }
+})
 </script>
 
 <template>
@@ -260,19 +319,33 @@ onMounted(() => {
       </div>
       
       <!-- 消息区域 -->
-      <div class="messages-container">
-        <div v-for="message in messages" :key="message.id" class="message">
-          <div class="message-avatar">{{ message.avatar }}</div>
+      <div class="messages-container" @scroll="handleScroll">
+        <div v-if="loading" class="loading-messages">
+          加载中...
+        </div>
+        
+        <div v-for="msg in chatStore.messages" :key="msg.message.messageID" class="message">
+          <div class="message-avatar">
+            <!-- 这里需要根据avatarId获取对应的头像URL -->
+            😊
+          </div>
           <div class="message-content">
             <div class="message-header">
-              <div class="message-username">{{ message.username }}</div>
-              <div class="message-timestamp">{{ message.timestamp }}</div>
+              <div class="message-username">
+                <!-- 这里需要根据roleId获取角色名称 -->
+                用户
+              </div>
+              <div class="message-timestamp">
+                {{ new Date(msg.message.createTime).toLocaleString() }}
+              </div>
             </div>
-            <div class="message-text">{{ message.content }}</div>
-            <div v-if="message.reactions.length > 0" class="message-reactions">
-              <div v-for="(reaction, index) in message.reactions" :key="index" class="reaction">
-                <span class="reaction-emoji">{{ reaction.emoji }}</span>
-                <span class="reaction-count">{{ reaction.count }}</span>
+            <div class="message-text">{{ msg.message.content }}</div>
+            <div v-if="msg.messageMark?.length" class="message-reactions">
+              <div v-for="mark in msg.messageMark" 
+                   :key="mark.messageMarkId" 
+                   class="reaction">
+                <span class="reaction-emoji">👍</span>
+                <span class="reaction-count">1</span>
               </div>
             </div>
           </div>
@@ -290,7 +363,7 @@ onMounted(() => {
           <input 
             type="text" 
             class="message-input" 
-            placeholder="发送消息到 #一般讨论" 
+            placeholder="发送消息" 
             v-model="newMessage"
             @keyup.enter="sendMessage"
           />
@@ -928,5 +1001,11 @@ onMounted(() => {
 
 .member-status.offline {
   background-color: #747f8d;
+}
+
+.loading-messages {
+  text-align: center;
+  padding: 20px;
+  color: #8e9297;
 }
 </style>

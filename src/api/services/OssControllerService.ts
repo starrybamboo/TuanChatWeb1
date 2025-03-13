@@ -14,7 +14,7 @@ export class OssControllerService {
      * @throws ApiError
      */
     public getUploadUrl(
-        requestBody?: UploadUrlReq,
+        requestBody: UploadUrlReq,
     ): CancelablePromise<ApiResultOssResp> {
         return this.httpRequest.request({
             method: 'POST',

@@ -18,6 +18,7 @@ interface Emits {
   (e: 'cancel'): void;
   (e: 'uploadAvatar', file: File): void;
   (e: 'refreshAvatars'): void;
+  (e: 'formDirtyChange', isDirty: boolean): void;
 }
 
 const props = defineProps<Props>();
@@ -33,9 +34,42 @@ const editForm = ref<UserRole>({
   ...(props.role || {})
 });
 
+// 深度监听props.role变化
+watch(() => props.role, (newRole) => {
+  if (newRole) {
+    editForm.value = {
+      ...editForm.value,
+      ...newRole
+    };
+  }
+}, { deep: true, immediate: true });
+
+// 表单是否被修改
+const isDirty = ref(false);
+
+// 监听表单变化
+watch([() => editForm.value.roleName, () => editForm.value.description, () => editForm.value.avatarId], ([newName, newDesc, newAvatarId]) => {
+  const hasNameChanged = newName !== props.role?.roleName;
+  const hasDescChanged = newDesc !== props.role?.description;
+  const hasAvatarChanged = newAvatarId !== props.role?.avatarId;
+  const newIsDirty = hasNameChanged || hasDescChanged || hasAvatarChanged;
+  
+  if (isDirty.value !== newIsDirty) {
+    isDirty.value = newIsDirty;
+    emit('formDirtyChange', newIsDirty);
+  }
+}, { immediate: true });
+
 // 保存表单
 const handleSave = () => {
-  emit('save', editForm.value);
+  console.log('正在提交的表单数据：', {
+    ...editForm.value,
+    avatarId: editForm.value.avatarId
+  });
+  emit('save', {
+    ...editForm.value,
+    avatarId: editForm.value.avatarId
+  });
 };
 // 在组件挂载时检查路由参数
 onMounted(() => {
@@ -59,6 +93,11 @@ watch(() => props.avatars, (newAvatars) => {
   console.log('RoleForm: avatars changed', newAvatars);
 }, { deep: true });
 
+const getCurrentFormData = () => ({ ...editForm.value });
+
+defineExpose({
+  getCurrentFormData
+});
 </script>
 
 <template>

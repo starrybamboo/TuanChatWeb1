@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, watch, nextTick} from 'vue';
 import { Plus } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import type { RoleAvatar } from '@/api/models/RoleAvatar';
 import type { RoleAvatarCreateRequest, RoleAvatarRequest, UploadUrlReq } from '@/api';
 import { tuanchat } from '@/api/instance';
@@ -116,6 +116,33 @@ watch(
   { deep: true, immediate: true } // 添加immediate:true确保组件挂载时立即执行
 );
 
+// 删除头像
+const handleDeleteAvatar = async (avatar: RoleAvatar) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除头像 "${avatar.avatarTitle || '未命名头像'}" 吗？`,
+      '删除头像',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    );
+
+    await tuanchat.avatarController.deleteRoleAvatar(avatar.avatarId!);
+
+    emit('refresh');
+    if (props.selectedAvatarId === avatar.avatarId) {
+      emit('update:selectedAvatarId', 0);
+    }
+    ElMessage.success('删除头像成功');
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('删除头像失败');
+    }
+  }
+};
+
 // 更新头像标题
 const handleUpdateTitle = async () => {
   if (!props.selectedAvatarId || !props.roleId) return;
@@ -163,10 +190,13 @@ const handleAvatarChange = async (uploadFile: any) => {
   reader.readAsDataURL(file);
 };
 
+const isProcessing = ref(false);
+
 // 处理裁剪完成
 const handleCropFinish = async () => {
-  if (!currentFile.value || !cropper.value) return;
+  if (!currentFile.value || !cropper.value || isProcessing.value) return;
   
+  isProcessing.value = true;
   try {
     // 保存裁剪框位置
     saveCropBoxData();
@@ -382,6 +412,9 @@ const getSpriteUrl = (avatarId: number) => {
               {{ avatar.avatarTitle ? avatar.avatarTitle.charAt(0) : 'A' }}
             </el-avatar>
             <div class="avatar-item-title">{{ avatar.avatarTitle || '未命名' }}</div>
+            <el-icon class="delete-icon" @click.stop="handleDeleteAvatar(avatar)">
+              <Delete />
+            </el-icon>
           </div>
         </div>
         <div v-else class="empty-avatar-grid">
@@ -434,7 +467,9 @@ const getSpriteUrl = (avatarId: number) => {
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="showCropDialog = false">取消</el-button>
-        <el-button type="primary" @click="handleCropFinish">确定</el-button>
+        <el-button type="primary" :disabled="isProcessing" @click="handleCropFinish">
+          {{ isProcessing ? '处理中...' : '确定' }}
+        </el-button>
       </span>
     </template>
   </el-dialog>

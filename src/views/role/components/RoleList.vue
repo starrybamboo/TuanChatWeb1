@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed} from 'vue';
 import { Plus, Search } from '@element-plus/icons-vue';
 import { ElMessageBox } from 'element-plus';
 import type { UserRole } from '@/api/models/UserRole';
@@ -10,6 +10,7 @@ interface Props {
   activeRoleId: number | null;
   loading?: boolean;
   isEditing?: boolean;
+  formIsDirty?: boolean;
 }
 
 interface Emits {
@@ -27,7 +28,7 @@ const searchQuery = ref('');
 
 // 处理角色选择
 const handleRoleSelect = async (roleId: number) => {
-  if (props.isEditing) {
+  if (props.isEditing && props.formIsDirty) {
     try {
       await ElMessageBox.confirm(
         '是否保存当前编辑的内容？',
@@ -47,7 +48,7 @@ const handleRoleSelect = async (roleId: number) => {
       }
     }
   } else {
-    // 非编辑状态直接切换
+    // 非编辑状态或表单未修改时直接切换
     emit('select', roleId);
   }
 };

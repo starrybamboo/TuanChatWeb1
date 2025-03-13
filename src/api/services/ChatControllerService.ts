@@ -77,19 +77,18 @@ export class ChatControllerService {
         });
     }
     /**
-     * @param request
+     * @param requestBody
      * @returns ApiResultCursorPageBaseResponseChatMessageResponse OK
      * @throws ApiError
      */
     public getMsgPage(
-        request: ChatMessagePageRequest,
+        requestBody: ChatMessagePageRequest,
     ): CancelablePromise<ApiResultCursorPageBaseResponseChatMessageResponse> {
         return this.httpRequest.request({
-            method: 'GET',
+            method: 'POST',
             url: '/capi/chat/message/page',
-            query: {
-                'request': request,
-            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 405: `Method Not Allowed`,
