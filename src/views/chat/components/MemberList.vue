@@ -30,8 +30,13 @@ const getRoleAvatarUrl = async (avatarId: number) => {
 const initRoleAvatarUrls = async () => {
   const roles = Array.from(groupStore.roleMap.values());
   for (const role of roles) {
-    if (role.avatarId) {
-      await getRoleAvatarUrl(role.avatarId);
+    if (role.roleId) {
+      // 获取角色的可用头像列表
+      await avatarStore.fetchRoleAvatars(role.roleId);
+      // 如果角色有设置头像，则获取头像URL
+      if (role.avatarId) {
+        await getRoleAvatarUrl(role.avatarId);
+      }
     }
   }
 };
