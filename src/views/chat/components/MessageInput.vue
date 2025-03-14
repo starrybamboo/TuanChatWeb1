@@ -1,20 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
+import { useRoleStore } from '@/stores/role'
+import { useAvatarStore } from '@/stores/avatar'
 
 const chatStore = useChatStore()
+const roleStore = useRoleStore()
+const avatarStore = useAvatarStore()
 const newMessage = ref('')
+const showRoleSelector = ref(false)
+
+// 在组件挂载时获取角色列表
+onMounted(async () => {
+  await roleStore.fetchRoles()
+  if (roleStore.roles.length > 0) {
+    roleStore.currentRole = roleStore.roles[0]
+  }
+})
 
 // 发送消息
 async function sendMessage() {
-  if (!newMessage.value.trim() || !chatStore.currentRoomId) return
+  if (!newMessage.value.trim() || !chatStore.currentRoomId || !roleStore.currentRole) return
   
   await chatStore.sendMessage({
     roomId: chatStore.currentRoomId,
     content: newMessage.value,
     messageType: 1, // 文本消息
-    roleId: 0, // 需要从当前选择的角色中获取
-    avatarId: 0, // 需要从当前选择的角色中获取
+    roleId: roleStore.currentRole.roleId,
+    avatarId: roleStore.currentRole.avatarId,
     body: {}
   })
   
@@ -24,6 +37,15 @@ async function sendMessage() {
 
 <template>
   <div class="message-input-container">
+    <div class="role-info">
+      <div class="role-avatar" @click="$emit('show-avatar-selector')">
+        <img v-if="roleStore.currentRole?.avatarId" :src="avatarStore.getAvatarUrl(roleStore.currentRole.avatarId)" alt="角色头像" />
+        <div v-else class="avatar-placeholder">选择头像</div>
+      </div>
+      <div class="role-name" @click="showRoleSelector = true">
+        {{ roleStore.currentRole?.roleName || '选择角色' }}
+      </div>
+    </div>
     <div class="input-wrapper">
       <button class="attach-btn">
         <svg width="24" height="24" viewBox="0 0 24 24">
@@ -59,40 +81,112 @@ async function sendMessage() {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
 .message-input-container {
-  padding: 0 16px 24px;
-  background-color: #36393f;
+  position: relative;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'Noto Serif SC', serif;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.role-info {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.role-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.role-avatar:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.02);
+}
+
+.role-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-name {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.role-name:hover {
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  background-color: #40444b;
-  border-radius: 8px;
-  min-height: 44px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .attach-btn {
   background: none;
   border: none;
-  color: #b9bbbe;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
   margin-right: 16px;
+  transition: all 0.3s ease;
 }
 
 .message-input {
   flex: 1;
   background: none;
   border: none;
-  color: #dcddde;
+  color: #ffffff;
   font-size: 16px;
   padding: 10px 0;
+  font-family: 'Noto Serif SC', serif;
 }
 
 .message-input::placeholder {
-  color: #72767d;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .message-input:focus {
@@ -102,6 +196,7 @@ async function sendMessage() {
 .input-actions {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .emoji-btn,
@@ -109,16 +204,26 @@ async function sendMessage() {
 .gif-btn {
   background: none;
   border: none;
-  color: #b9bbbe;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  padding: 4px;
-  margin-left: 4px;
+  padding: 8px;
+  transition: all 0.3s ease;
 }
 
 .emoji-btn:hover,
 .gift-btn:hover,
 .gif-btn:hover,
 .attach-btn:hover {
-  color: #dcddde;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-input-container {
+  animation: fadeIn 0.3s ease-out;
 }
 </style>

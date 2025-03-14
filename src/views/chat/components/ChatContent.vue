@@ -4,9 +4,13 @@ import { useChatStore } from '@/stores/chat'
 import { useRoleStore } from '@/stores/role'
 import MessageInput from './MessageInput.vue'
 
+defineEmits(['show-avatar-selector', 'toggle-member-list'])
+
 const chatStore = useChatStore()
+const roleStore = useRoleStore()
 const loading = ref(false)
 const hasMore = ref(true)
+const showAvatarSelector = ref(false) // 添加这一行
 
 // 初始化聊天
 async function initializeChat(roomId: number) {
@@ -46,6 +50,13 @@ function handleScroll(e: Event) {
   if (target.scrollTop === 0) {
     loadMoreMessages()
   }
+}
+
+// 选择头像
+const handleSelectAvatar = async (avatarId: number) => {
+  if (!roleStore.currentRole) return
+  roleStore.currentRole.avatarId = avatarId
+  showAvatarSelector.value = false // 添加这一行
 }
 
 onMounted(() => {
@@ -113,7 +124,7 @@ onUnmounted(() => {
               {{ new Date(msg.message.createTime).toLocaleString() }}
             </div>
           </div>
-          <div class="message-text">{{ msg.message.content }}</div>
+          <div class="message-text">{{ '『 ' + msg.message.content + ' 』' }}</div>
           <div v-if="msg.messageMark?.length" class="message-reactions">
             <div v-for="mark in msg.messageMark" 
                  :key="mark.messageMarkId" 
@@ -126,8 +137,7 @@ onUnmounted(() => {
       </div>
     </div>
     
-    <!-- 消息输入框 -->
-    <MessageInput />
+    <MessageInput @show-avatar-selector="$emit('show-avatar-selector')" />
   </div>
 </template>
 

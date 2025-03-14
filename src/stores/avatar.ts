@@ -15,6 +15,11 @@ export const useAvatarStore = defineStore('avatar', {
     error: null as string | null
   }),
   getters: {
+    // 获取指定角色的所有头像
+    getRoleAvatars: (state) => (roleId: number | undefined) => {
+      if (!roleId) return [];
+      return state.avatars.filter(avatar => avatar.roleId === roleId);
+    },
     // 根据头像ID获取头像URL
     getAvatarUrl: (state) => (avatarId: number | undefined) => {
       if (!avatarId) return '';
