@@ -15,11 +15,6 @@ export const useAvatarStore = defineStore('avatar', {
     error: null as string | null
   }),
   getters: {
-    // 根据头像ID获取头像URL
-    getAvatarUrl: (state) => (avatarId: number | undefined) => {
-      if (!avatarId) return '';
-      return state.avatarMap.get(avatarId) || '';
-    },
     // 根据头像ID获取精灵图URL
     getSpriteUrl: (state) => (avatarId: number | undefined) => {
       if (!avatarId) return '';
@@ -36,6 +31,16 @@ export const useAvatarStore = defineStore('avatar', {
     }
   },
   actions: {
+    // 根据头像ID获取头像URL
+    async getAvatarUrl(avatarId: number | undefined) {
+      if (!avatarId) return '';
+      const url = this.avatarMap.get(avatarId);
+      if (url) return url;
+      
+      // 尝试获取头像信息
+      const avatar = await this.fetchAvatarById(avatarId);
+      return avatar?.avatarUrl || '';
+    },
     // 获取角色的所有头像
     async fetchRoleAvatars(roleId: number) {
       this.loading = true;

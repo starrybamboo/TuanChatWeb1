@@ -2,12 +2,19 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { tuanchat } from '@/api/instance'
 import { wsService } from '@/services/websocket'
+import { useAvatarStore } from '@/stores/avatar'
 import type { ChatMessageRequest, ChatMessageResponse, Message } from '@/api/models'
 
 export const useChatStore = defineStore('chat', () => {
   const messages = ref<ChatMessageResponse[]>([])
   const currentRoomId = ref<number | null>(null)
-  const chatControllerApi = tuanchat.chatController;
+  const chatControllerApi = tuanchat.chatController
+  const avatarStore = useAvatarStore()
+
+  // 获取消息头像URL
+  function getMessageAvatarUrl(avatarId: number | undefined) {
+    return avatarStore.getAvatarUrl(avatarId)
+  }
 
   // 加载历史消息
   async function loadMessages(roomId: number, cursor?: number) {
@@ -31,7 +38,13 @@ export const useChatStore = defineStore('chat', () => {
   // 发送消息
   async function sendMessage(message: ChatMessageRequest) {
     try {
-      await chatControllerApi.sendMessage(message)
+      // 构建WebSocket消息格式
+      const wsMessage = {
+        type: 3,
+        data: message
+      }
+      // 通过WebSocket发送消息
+      wsService.sendMessage(wsMessage)
     } catch (error) {
       console.error('Failed to send message:', error)
     }
@@ -61,6 +74,7 @@ export const useChatStore = defineStore('chat', () => {
     currentRoomId,
     loadMessages,
     sendMessage,
-    initializeWebSocket
+    initializeWebSocket,
+    getMessageAvatarUrl
   }
 })

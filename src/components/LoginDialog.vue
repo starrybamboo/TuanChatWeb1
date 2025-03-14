@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { tuanchat } from '@/api/instance'
 import { useUserStore } from '@/stores/user'
-import { wsService } from '@/services/websocket'
 
 const router = useRouter()
 const userStore = useUserStore()
