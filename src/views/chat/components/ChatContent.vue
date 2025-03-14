@@ -10,7 +10,6 @@ const chatStore = useChatStore()
 const roleStore = useRoleStore()
 const loading = ref(false)
 const hasMore = ref(true)
-const showAvatarSelector = ref(false) // 添加这一行
 
 // 初始化聊天
 async function initializeChat(roomId: number) {
@@ -18,8 +17,24 @@ async function initializeChat(roomId: number) {
   loading.value = true
   
   try {
+    // 加载消息
     const result = await chatStore.loadMessages(roomId)
     hasMore.value = !result?.isLast
+    
+    // 预加载所有消息中的角色信息
+    if (result?.list) {
+      const roleIds = new Set(result.list.map(msg => msg.message.roleId))
+
+      await Promise.all(Array.from(roleIds).map(async roleId => {
+        const role = await roleStore.fetchRoleById(roleId)
+        if (role) {
+          const existingRole = roleStore.roles.find(r => r.roleId === roleId)
+          if (!existingRole) {
+            roleStore.roles.push(role)
+          }
+        }
+      }))
+    }
   } finally {
     loading.value = false
   }
@@ -52,12 +67,6 @@ function handleScroll(e: Event) {
   }
 }
 
-// 选择头像
-const handleSelectAvatar = async (avatarId: number) => {
-  if (!roleStore.currentRole) return
-  roleStore.currentRole.avatarId = avatarId
-  showAvatarSelector.value = false // 添加这一行
-}
 
 onMounted(() => {
   // 初始化默认房间的消息
@@ -118,7 +127,7 @@ onUnmounted(() => {
         <div class="message-content">
           <div class="message-header">
             <div class="message-username">
-              {{ useRoleStore().getRoleNameById(msg.message.roleId) }}
+              {{ roleStore.getRoleNameById(msg.message.roleId) }}
             </div>
             <div class="message-timestamp">
               {{ new Date(msg.message.createTime).toLocaleString() }}

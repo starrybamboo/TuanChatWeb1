@@ -122,21 +122,10 @@ export const useRoleStore = defineStore('role', {
         this.loading = false;
       }
     },
-    async getRoleNameById(id: number) {
-      // 先从缓存的roles中查找
+    getRoleNameById(id: number) {
+      // 从缓存的roles中查找
       const cachedRole = this.roles.find(role => role.roleId === id);
-      if (cachedRole) {
-        return cachedRole.roleName || '未命名角色';
-      }
-      
-      // 如果缓存中没有，则调用API获取
-      try {
-        const role = await this.fetchRoleById(id);
-        return role?.roleName || '未命名角色';
-      } catch (error) {
-        console.error('获取角色名称失败:', error);
-        return '未知角色';
-      }
+      return cachedRole?.roleName || '未命名角色';
     },
   }
 });

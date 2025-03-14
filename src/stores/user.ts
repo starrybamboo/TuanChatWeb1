@@ -7,6 +7,8 @@ export const useUserStore = defineStore('user', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
   const userInfo = ref<UserInfoResponse | null>(null)
   const userControllerApi = tuanchat.userController
+  // 用户信息缓存
+  const userInfoCache = ref<Map<number, UserInfoResponse>>(new Map())
 
   const setToken = (newToken: string | null) => {
     token.value = newToken
@@ -26,17 +28,21 @@ export const useUserStore = defineStore('user', () => {
     setUserInfo(null)
   }
 
-  // 获取用户名称
-  async function getUsernameById(userId: number) {
+  // 同步获取用户名称
+  const getUsernameById = (userId: number): string => {
+    const cachedUser = userInfoCache.value.get(userId)
+    return cachedUser?.username || ''
+  }
+
+  // 异步加载用户信息到缓存
+  const loadUserInfo = async (userId: number) => {
     try {
       const response = await userControllerApi.getUserInfo(userId)
       if (response.success && response.data) {
-        return response.data.username
+        userInfoCache.value.set(userId, response.data)
       }
-      return ''
     } catch (error) {
-      console.error('Failed to get username:', error)
-      return ''
+      console.error('Failed to load user info:', error)
     }
   }
 
@@ -46,6 +52,8 @@ export const useUserStore = defineStore('user', () => {
     setToken,
     setUserInfo,
     clearUserInfo,
-    getUsernameById
+    getUsernameById,
+    loadUserInfo,
+    userInfoCache
   }
 })
