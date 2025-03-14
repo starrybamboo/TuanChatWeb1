@@ -175,8 +175,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  wsService.disconnect()
-  
   const messagesContainer = document.querySelector('.messages-container')
   if (messagesContainer) {
     messagesContainer.removeEventListener('scroll', handleScroll)
@@ -1009,3 +1007,4 @@ onUnmounted(() => {
   color: #8e9297;
 }
 </style>
+</template>

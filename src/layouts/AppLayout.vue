@@ -10,7 +10,7 @@ const loginDialog = ref()
 const navItems = [
   { name: '推荐', path: '/feed' },
   { name: '社区', path: '/community' },
-  { name: '游玩', path: '/play' },
+  { name: '游玩', path: '/chat' },
   { name: '角色', path: '/role' },
   { name: '模组', path: '/module' },
   { name: '创作', path: '/create' }

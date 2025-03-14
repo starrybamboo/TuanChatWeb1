@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { tuanchat } from '@/api/instance'
 import { useUserStore } from '@/stores/user'
+import { wsService } from '@/services/websocket'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -35,6 +36,7 @@ const handleLogin = async () => {
     try {
       const userInfo = await tuanchat.userController.getUserInfo(Number(loginForm.value.userId))
       userStore.setUserInfo(userInfo.data!)
+      // 更新用户信息后不需要重新连接WebSocket
     } catch (infoError) {
       console.error('获取用户信息失败：', infoError)
       // 如果获取用户信息失败，清除token
