@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { tuanchat } from '@/api/instance'
 import { wsService } from '@/services/websocket'
 import { useAvatarStore } from '@/stores/avatar'
@@ -10,6 +10,7 @@ export const useChatStore = defineStore('chat', () => {
   const currentRoomId = ref<number | null>(null)
   const chatControllerApi = tuanchat.chatController
   const avatarStore = useAvatarStore()
+  const roomCursors = ref<Map<number, number>>(new Map())
 
   // 获取消息头像URL
   function getMessageAvatarUrl(avatarId: number | undefined) {
@@ -19,14 +20,21 @@ export const useChatStore = defineStore('chat', () => {
   // 加载历史消息
   async function loadMessages(roomId: number, cursor?: number) {
     try {
+      // 如果没有提供cursor，使用存储的cursor
+      const currentCursor = cursor || roomCursors.value.get(roomId)
+      
       const response = await chatControllerApi.getMsgPage({
         roomId,
-        cursor,
+        cursor: currentCursor,
         pageSize: 20
       })
       
       if (response.data?.list) {
         messages.value = [...response.data.list, ...messages.value]
+        // 更新房间的cursor
+        if (response.data.cursor) {
+          roomCursors.value.set(roomId, response.data.cursor)
+        }
       }
       
       return response.data

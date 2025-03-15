@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useRoleStore } from '@/stores/role'
 import MessageInput from './MessageInput.vue'
@@ -34,6 +34,14 @@ async function initializeChat(roomId: number) {
           }
         }
       }))
+
+      // 等待DOM更新后滚动到底部
+      await nextTick(() => {
+        const messagesContainer = document.querySelector('.messages-container')
+        if (messagesContainer) {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight
+        }
+      })
     }
   } finally {
     loading.value = false
@@ -48,11 +56,21 @@ async function loadMoreMessages() {
   try {
     const firstMessage = chatStore.messages[0]
     if (firstMessage) {
-      const result = await chatStore.loadMessages(
-        chatStore.currentRoomId,
-        firstMessage.message.messageID
-      )
+      const messagesContainer = document.querySelector('.messages-container')
+      const oldHeight = messagesContainer?.scrollHeight || 0
+      const oldScrollTop = messagesContainer?.scrollTop || 0
+
+      const result = await chatStore.loadMessages(chatStore.currentRoomId)
       hasMore.value = !result?.isLast
+
+      // 等待DOM更新后调整滚动位置
+      await nextTick(() => {
+        if (messagesContainer) {
+          const newHeight = messagesContainer.scrollHeight
+          const heightDiff = newHeight - oldHeight
+          messagesContainer.scrollTop = oldScrollTop + heightDiff
+        }
+      })
     }
   } finally {
     loading.value = false
@@ -109,7 +127,7 @@ onUnmounted(() => {
       <div v-for="(msg, index) in chatStore.messages" :key="msg.message.messageID" 
            :class="[`message`, {
              'merged': index > 0 && 
-                      chatStore.messages[index - 1].message.roleId === msg.message.roleId &&
+                      chatStore.messages[index - 1].message.roleId === msg.message.roleId&&
                       new Date(msg.message.createTime).getTime() - new Date(chatStore.messages[index - 1].message.createTime).getTime() < 300000
            }]">
         <div class="character-portrait">
@@ -213,6 +231,10 @@ onUnmounted(() => {
 .message.merged .character-portrait,
 .message.merged .message-name {
   display: none;
+}
+
+.message.merged .message-text {
+  padding: 2px 0;
 }
 
 .character-portrait {
