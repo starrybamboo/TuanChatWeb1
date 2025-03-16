@@ -44,7 +44,7 @@ async function sendMessage() {
         <div v-else class="avatar-placeholder">选择头像</div>
       </div>
     </div>
-    <div>
+    <div style="flex: 1; min-width: 0; width: 100%;">
       <div class="role-name" @click="showRoleSelector = true">
       {{ roleStore.currentRole?.roleName || '选择角色' }}
     </div>
@@ -164,23 +164,19 @@ async function sendMessage() {
   border-radius: 12px;
   backdrop-filter: blur(5px);
   transition: all 0.3s ease;
-}
-
-.input-wrapper:focus-within {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  flex: 1;
+  min-width: 0;
 }
 
 .attach-btn {
   background: none;
-  width: 100%;
   border: none;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   padding: 8px;
   margin-right: 16px;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .message-input {
@@ -191,6 +187,7 @@ async function sendMessage() {
   font-size: 16px;
   padding: 10px 0;
   font-family: 'Noto Serif SC', serif;
+  min-width: 0;
 }
 
 .message-input::placeholder {

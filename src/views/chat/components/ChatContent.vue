@@ -186,7 +186,8 @@ function cancelEditMessage() {
 function handleSelectAvatar(avatarId: number) {
   if (!selectedMessageId.value) return
 
-  const message = chatStore.messages.find(msg => msg.message.messageID === selectedMessageId.value)
+  const currentRoomMessages = chatStore.messages.get(chatStore.currentRoomId) || []
+  const message = currentRoomMessages.find(msg => msg.message.messageID === selectedMessageId.value)
   if (message) {
     const updatedMessage = { ...message.message, avatarId }
     chatStore.updateMessage(updatedMessage)
@@ -304,7 +305,7 @@ onUnmounted(() => {
     <MessageInput @show-avatar-selector="$emit('show-avatar-selector')" />
 
     <AvatarSelector v-model:show="showAvatarSelector"
-      :role-id="selectedMessageId ? chatStore.messages.find(msg => msg.message.messageID === selectedMessageId)?.message.roleId : undefined"
+      :role-id="selectedMessageId ? Array.from(chatStore.messages.get(chatStore.currentRoomId) || []).find(msg => msg.message.messageID === selectedMessageId)?.message.roleId : undefined"
       @select="handleSelectAvatar" />
   </div>
 </template>

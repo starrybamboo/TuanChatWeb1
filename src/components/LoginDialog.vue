@@ -24,7 +24,7 @@ const handleLogin = async () => {
   try {
     loading.value = true
     const result = await tuanchat.userController.login({
-      userId: Number(loginForm.value.userId),
+      userId: loginForm.value.userId,
       password: loginForm.value.password
     })
     
