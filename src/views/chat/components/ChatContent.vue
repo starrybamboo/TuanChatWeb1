@@ -5,6 +5,7 @@ import { useRoleStore } from '@/stores/role'
 import { useGroupStore } from '@/stores/group'
 import MessageInput from './MessageInput.vue'
 import AvatarSelector from './AvatarSelector.vue'
+import { Search, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 
 defineEmits(['show-avatar-selector', 'toggle-member-list'])
 
@@ -18,17 +19,63 @@ const hasMore = ref(true)
 const editingMessage = ref<any>(null)
 const showAvatarSelector = ref(false)
 const selectedMessageId = ref<number | null>(null)
+const searchQuery = ref('')
+const searchResults = ref<number[]>([])
+const currentSearchIndex = ref(-1)
+
+// 搜索消息
+function searchMessages() {
+  searchResults.value = []
+  currentSearchIndex.value = -1
+
+  if (!searchQuery.value.trim()) return
+
+  const query = searchQuery.value.toLowerCase()
+  chatStore.messages.forEach((msg, index) => {
+    if (msg.message.content && msg.message.content.toLowerCase().includes(query)) {
+      searchResults.value.push(index)
+    }
+  })
+}
+
+// 跳转到下一个搜索结果
+function goToNextResult() {
+  if (searchResults.value.length === 0) return
+
+  currentSearchIndex.value = (currentSearchIndex.value + 1) % searchResults.value.length
+  scrollToMessage(searchResults.value[currentSearchIndex.value])
+}
+
+// 跳转到上一个搜索结果
+function goToPrevResult() {
+  if (searchResults.value.length === 0) return
+
+  currentSearchIndex.value = currentSearchIndex.value <= 0
+    ? searchResults.value.length - 1
+    : currentSearchIndex.value - 1
+  scrollToMessage(searchResults.value[currentSearchIndex.value])
+}
+
+// 滚动到指定消息
+function scrollToMessage(index: number) {
+  const messagesContainer = document.querySelector('.messages-container')
+  const messageElements = messagesContainer?.querySelectorAll('.message')
+
+  if (messagesContainer && messageElements && messageElements[index]) {
+    messageElements[index].scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
 
 // 初始化聊天
 async function initializeChat(roomId: number) {
   chatStore.currentRoomId = roomId
   loading.value = true
-  
+
   try {
     // 加载消息
     const result = await chatStore.loadMessages(roomId)
     hasMore.value = !result?.isLast
-    
+
     // 预加载所有消息中的角色信息
     if (result?.list) {
       const roleIds = new Set(result.list.map(msg => msg.message.roleId))
@@ -59,7 +106,7 @@ async function initializeChat(roomId: number) {
 // 加载更多消息
 async function loadMoreMessages() {
   if (!hasMore.value || loading.value || !chatStore.currentRoomId) return
-  
+
   loading.value = true
   try {
     const firstMessage = chatStore.messages[0]
@@ -77,6 +124,10 @@ async function loadMoreMessages() {
           const newHeight = messagesContainer.scrollHeight
           const heightDiff = newHeight - oldHeight
           messagesContainer.scrollTop = oldScrollTop + heightDiff
+          // 如果有搜索关键词，重新执行搜索
+          if (searchQuery.value.trim()) {
+            searchMessages()
+          }
         }
       })
     }
@@ -101,7 +152,7 @@ function startEditMessage(msg: any) {
 // 保存编辑的消息
 async function saveEditMessage() {
   if (!editingMessage.value) return
-  
+
   try {
     await chatStore.updateMessage(editingMessage.value)
     editingMessage.value = null
@@ -118,13 +169,13 @@ function cancelEditMessage() {
 // 处理头像选择
 function handleSelectAvatar(avatarId: number) {
   if (!selectedMessageId.value) return
-  
+
   const message = chatStore.messages.find(msg => msg.message.messageID === selectedMessageId.value)
   if (message) {
     const updatedMessage = { ...message.message, avatarId }
     chatStore.updateMessage(updatedMessage)
   }
-  
+
   showAvatarSelector.value = false
   selectedMessageId.value = null
 }
@@ -132,14 +183,18 @@ function handleSelectAvatar(avatarId: number) {
 // 显示头像选择器
 function showAvatarSelectorDialog(messageId: number, roleId: number) {
   selectedMessageId.value = messageId
-  
+
   showAvatarSelector.value = true
 }
 
 onMounted(() => {
-  // 初始化默认房间的消息
-  initializeChat(1) // 假设默认房间ID为1
-  
+  // 等待ChannelSelector组件选择默认群组
+  if (groupStore.currentGroupId) {
+    initializeChat(groupStore.currentGroupId)
+  } else {
+    initializeChat(1)
+  }
+
   const messagesContainer = document.querySelector('.messages-container')
   if (messagesContainer) {
     messagesContainer.addEventListener('scroll', handleScroll)
@@ -160,45 +215,65 @@ onUnmounted(() => {
       <div class="header-title">
         <span>{{ groupStore.currentGroup?.roomName || '故事回顾' }}</span>
       </div>
+      <div class="search-container">
+        <el-input v-model="searchQuery" placeholder="搜索消息..." :prefix-icon="Search" clearable @input="searchMessages"
+          @clear="searchMessages">
+          <template #append>
+            <el-button-group>
+              <el-button :disabled="!searchResults.length" @click="goToPrevResult">
+                <el-icon>
+                  <ArrowUp />
+                </el-icon>
+              </el-button>
+              <el-button :disabled="!searchResults.length" @click="goToNextResult">
+                <el-icon>
+                  <ArrowDown />
+                </el-icon>
+              </el-button>
+            </el-button-group>
+          </template>
+        </el-input>
+        <span v-if="searchResults.length" class="search-count">
+          {{ currentSearchIndex + 1 }}/{{ searchResults.length }}
+        </span>
+      </div>
       <div class="header-actions">
         <button class="header-btn" @click="$emit('toggle-member-list')">
           <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M14 8.00598C14 10.211 12.206 12.006 10 12.006C7.795 12.006 6 10.211 6 8.00598C6 5.80098 7.794 4.00598 10 4.00598C12.206 4.00598 14 5.80098 14 8.00598ZM2 19.006C2 15.473 5.29 13.006 10 13.006C14.711 13.006 18 15.473 18 19.006V20.006H2V19.006Z"></path>
+            <path fill="currentColor"
+              d="M14 8.00598C14 10.211 12.206 12.006 10 12.006C7.795 12.006 6 10.211 6 8.00598C6 5.80098 7.794 4.00598 10 4.00598C12.206 4.00598 14 5.80098 14 8.00598ZM2 19.006C2 15.473 5.29 13.006 10 13.006C14.711 13.006 18 15.473 18 19.006V20.006H2V19.006Z">
+            </path>
           </svg>
         </button>
       </div>
     </div>
-    
+
     <div class="messages-container" @scroll="handleScroll">
       <div v-if="loading" class="loading-messages">
         加载中...
       </div>
-      
-      <div v-for="(msg, index) in chatStore.messages" :key="String(msg.message.messageID)" 
-           :class="[`message`, {
-             'merged': index > 0 && 
-                      chatStore.messages[index - 1].message.roleId === msg.message.roleId&&
-                      new Date(msg.message.createTime).getTime() - new Date(chatStore.messages[index - 1].message.createTime).getTime() < 300000
-           }]">
+
+      <div v-for="(msg, index) in chatStore.messages" :key="String(msg.message.messageID)" :class="[`message`, {
+          'merged': index > 0 &&
+            chatStore.messages[index - 1].message.roleId === msg.message.roleId &&
+            new Date(msg.message.createTime).getTime() - new Date(chatStore.messages[index - 1].message.createTime).getTime() < 300000
+        }]">
         <div class="character-portrait" @click="showAvatarSelectorDialog(msg.message.messageID, msg.message.roleId)">
-          <el-avatar :size="80" :src="chatStore.getMessageAvatarUrl(msg.message.avatarId)" class="portrait-image"/>
+          <el-avatar :size="80" :src="chatStore.getMessageAvatarUrl(msg.message.avatarId)" class="portrait-image" />
         </div>
         <div class="message-box">
           <div class="message-name">
             {{ roleStore.getRoleNameById(msg.message.roleId) }}
           </div>
           <div class="message-content">
-            <div class="message-text" @click="startEditMessage(msg)" v-if="editingMessage?.messageID !== msg.message.messageID">
+            <div class="message-text" @click="startEditMessage(msg)"
+              v-if="editingMessage?.messageID !== msg.message.messageID"
+              :class="{ 'highlight': searchQuery && msg.message.content && msg.message.content.toLowerCase().includes(searchQuery.toLowerCase()) }">
               {{ msg.message.content }}
             </div>
             <div v-else class="message-edit">
-              <el-input
-                v-model="editingMessage.content"
-                type="textarea"
-                :rows="3"
-                @keydown.enter.prevent="saveEditMessage"
-                @keyup.esc="cancelEditMessage"
-              />
+              <el-input v-model="editingMessage.content" type="textarea" :rows="3"
+                @keydown.enter.prevent="saveEditMessage" @keyup.esc="cancelEditMessage" />
               <div class="edit-actions">
                 <el-button size="small" @click="saveEditMessage">保存</el-button>
                 <el-button size="small" @click="cancelEditMessage">取消</el-button>
@@ -209,14 +284,12 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    
+
     <MessageInput @show-avatar-selector="$emit('show-avatar-selector')" />
-    
-    <AvatarSelector
-      v-model:show="showAvatarSelector"
+
+    <AvatarSelector v-model:show="showAvatarSelector"
       :role-id="selectedMessageId ? chatStore.messages.find(msg => msg.message.messageID === selectedMessageId)?.message.roleId : undefined"
-      @select="handleSelectAvatar"
-    />
+      @select="handleSelectAvatar" />
   </div>
 </template>
 
@@ -238,6 +311,28 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-container {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-count {
+  color: #fff;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.message-text.highlight {
+  background: rgba(255, 255, 0, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: -4px -8px;
 }
 
 .header-title {
@@ -329,8 +424,15 @@ onUnmounted(() => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .message-box {

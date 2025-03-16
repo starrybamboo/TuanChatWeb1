@@ -5,8 +5,17 @@ import { tuanchat } from '@/api/instance'
 
 const groupStore = useGroupStore()
 
+// 定义服务器和频道的接口
+interface Server {
+  id: number;
+  name: string;
+  icon: string;
+  hasNotification: boolean;
+  children?: Server[];
+}
+
 // 服务器列表数据
-const servers = ref<any[]>([]);
+const servers = ref<Server[]>([]);
 
 // 当前选中的服务器ID
 const activeServerId = ref<number | null>(null);
@@ -17,16 +26,15 @@ const initServers = async () => {
     const response = await tuanchat.roomGroupController.getUserGroups()
     if (response.data) {
       // 分离一级群组和二级群组
-      const firstLevelGroups = response.data.filter(group => group.parentGroupId === group.roomId)
-      const secondLevelGroups = response.data.filter(group => group.parentGroupId !== group.roomId)
-      
+      const firstLevelGroups = response.data.filter(group => group.parentGroupId == group.roomId)
+      const secondLevelGroups = response.data
+
       // 更新服务器列表，将二级群组作为一级群组的子元素
       servers.value = firstLevelGroups.map(group => ({
         id: group.roomId,
         name: group.name,
         icon: group.avatar || '🏠',
         hasNotification: false,
-        isExpanded: true, // 默认展开状态
         children: secondLevelGroups
           .filter(subGroup => subGroup.parentGroupId === group.roomId)
           .map(subGroup => ({
@@ -42,77 +50,29 @@ const initServers = async () => {
   }
 }
 
-// 频道分类和频道列表
-interface Channel {
-  id: number;
-  name: string;
-  unread: boolean;
-  selected: boolean;
-  type: string;
-}
+// 当前选中的二级群组ID
+const activeSubGroupId = ref<number | null>(null);
 
-interface ChannelCategory {
-  id: number;
-  name: string;
-  isExpanded: boolean;
-  channels: Channel[];
-}
-
-const channelCategories = ref<ChannelCategory[]>([]);
-
-// 更新频道列表
-const updateChannels = (serverId: number) => {
+// 更新二级群组列表
+const updateSubGroups = (serverId: number) => {
   const server = servers.value.find(s => s.id === serverId);
-  if (server && server.children) {
-    channelCategories.value = [
-      {
-        id: 1,
-        name: '文字频道',
-        isExpanded: true,
-        channels: server.children.map(child => ({
-          id: child.id,
-          name: child.name,
-          unread: false,
-          selected: false,
-          type: 'text'
-        }))
-      }
-    ];
-    // 默认选中第一个频道
-    if (channelCategories.value[0].channels.length > 0) {
-      switchChannel(channelCategories.value[0].channels[0].id);
-    }
+  if (server && server.children && server.children.length > 0) {
+    // 默认选中第一个二级群组
+    const firstSubGroup = server.children[0];
+    activeSubGroupId.value = firstSubGroup.id;
+    switchSubGroup(firstSubGroup.id);
   }
 };
 
 // 当前选中的频道ID
 const activeChannelId = ref(1);
 
-// 切换频道分类展开/折叠状态
-const toggleCategory = (categoryId: number) => {
-  const category = channelCategories.value.find(c => c.id === categoryId);
-  if (category) {
-    category.isExpanded = !category.isExpanded;
-  }
-};
-
-// 切换频道
-const switchChannel = (channelId: number) => {
-  // 重置之前选中的频道
-  channelCategories.value.forEach(category => {
-    category.channels.forEach(channel => {
-      if (channel.id === activeChannelId.value) {
-        channel.selected = false;
-      }
-      if (channel.id === channelId) {
-        channel.selected = true;
-        channel.unread = false; // 标记为已读
-      }
-    });
-  });
-  activeChannelId.value = channelId;
+// 切换二级群组
+const switchSubGroup = (subGroupId: number) => {
+  // 更新选中状态
+  activeSubGroupId.value = subGroupId;
   // 更新当前群组ID
-  groupStore.setCurrentGroupId(channelId);
+  groupStore.setCurrentGroupId(subGroupId);
 };
 
 // 初始化时设置默认群组并获取群组列表
@@ -128,83 +88,42 @@ onMounted(async () => {
 <template>
   <div class="channel-selector">
     <!-- 服务器列表容器 -->
-    <div class="server-container">
-      <!-- 一级群组列表 -->
-      <div class="server-list primary-servers">
-        <template v-for="server in servers" :key="server.id">
-          <div 
-            class="server-item"
-            :class="{ 
-              'has-notification': server.hasNotification,
-              'active': activeServerId === server.id
-            }"
-            @click="() => {
-              activeServerId = server.id;
-              updateChannels(server.id);
-            }"
-          >
-            <div class="server-icon">
-              <img v-if="server.icon && server.icon.startsWith('http')" :src="server.icon" @error="server.icon = '🏠'" />
-              <span v-else>{{ server.icon }}</span>
-            </div>
-            <div class="server-name">{{ server.name }}</div>
-            <div class="notification-dot" v-if="server.hasNotification"></div>
-            <span class="toggle-icon" @click.stop="server.isExpanded = !server.isExpanded">{{ server.isExpanded ? '▼' : '▶' }}</span>
+    <div class="server-list primary-servers">
+      <template v-for="server in servers" :key="server.id">
+        <div class="server-item" :class="{
+        'has-notification': server.hasNotification,
+        'active': activeServerId === server.id
+      }" @click="() => {
+        activeServerId = server.id;
+        updateSubGroups(server.id);
+      }">
+          <div class="server-icon">
+            <img v-if="server.icon && server.icon.startsWith('http')" :src="server.icon" @error="server.icon = '🏠'" />
+            <span v-else>{{ server.icon }}</span>
           </div>
-          <!-- 二级群组列表 -->
-          <transition name="slide">
-            <div v-if="server.isExpanded" class="child-servers">
-              <div 
-                v-for="child in server.children" 
-                :key="child.id"
-                class="server-item child-server"
-                :class="{ 'has-notification': child.hasNotification }"
-                @click="() => {
-                  activeServerId = child.id;
-                  updateChannels(child.id);
-                }"
-              >
-                <div class="server-icon">
-                  <img v-if="child.icon && child.icon.startsWith('http')" :src="child.icon" @error="child.icon = '📚'" />
-                  <span v-else>{{ child.icon }}</span>
-                </div>
-                <div class="server-name">{{ child.name }}</div>
-                <div class="notification-dot" v-if="child.hasNotification"></div>
-              </div>
-            </div>
-          </transition>
-        </template>
-      </div>
-
-      <!-- 频道列表（替换原二级群组列表位置） -->
-      <div class="server-list secondary-servers channel-list">
-        <div 
-          v-for="category in channelCategories" 
-          :key="category.id"
-          class="category"
-        >
-          <div class="category-header" @click="toggleCategory(category.id)">
-            <span>{{ category.name }}</span>
-            <span class="toggle-icon">{{ category.isExpanded ? '▼' : '▶' }}</span>
-          </div>
-          
-          <div class="channels" v-show="category.isExpanded">
-            <div
-              v-for="channel in category.channels"
-              :key="channel.id"
-              class="channel-item"
-              :class="{ 
-                'selected': channel.selected,
-                'unread': channel.unread 
-              }"
-              @click="switchChannel(channel.id)"
-            >
-              {{ channel.type === 'voice' ? '🔊' : '#' }}{{ channel.name }}
-              <div class="unread-indicator" v-if="channel.unread"></div>
-            </div>
-          </div>
+          <div class="server-name">{{ server.name }}</div>
+          <div class="notification-dot" v-if="server.hasNotification"></div>
         </div>
-      </div>
+      </template>
+    </div>
+
+    <!-- 二级群组列表 -->
+    <div class="server-list secondary-servers">
+      <template v-if="activeServerId && servers.find(s => s.id === activeServerId)?.children">
+        <div v-for="subGroup in servers.find(s => s.id === activeServerId)?.children" :key="subGroup.id"
+          class="server-item" :class="{
+        'has-notification': subGroup.hasNotification,
+        'active': activeSubGroupId === subGroup.id
+      }" @click="switchSubGroup(subGroup.id)">
+          <div class="server-icon">
+            <img v-if="subGroup.icon && subGroup.icon.startsWith('http')" :src="subGroup.icon"
+              @error="subGroup.icon = '📚'" />
+            <span v-else>{{ subGroup.icon }}</span>
+          </div>
+          <div class="server-name">{{ subGroup.name }}</div>
+          <div class="notification-dot" v-if="subGroup.hasNotification"></div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -214,15 +133,8 @@ onMounted(async () => {
   width: 480px;
   background-color: #2f3136;
   display: flex;
-  flex-direction: column;
-}
-
-.server-container {
-  display: flex;
   flex-direction: row;
-  background-color: #202225;
-  padding: 12px;
-  gap: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .server-list {
@@ -230,63 +142,102 @@ onMounted(async () => {
 }
 
 .primary-servers {
-  width: 240px;
+  width: 72px;
+  background-color: #202225;
   border-right: 1px solid #42464d;
+  position: relative;
+
+  .server-item {
+    flex-direction: column;
+    text-align: center;
+
+    .server-name {
+      font-size: 12px;
+      margin-top: 4px;
+      text-align: center;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.primary-servers::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, rgba(79, 84, 92, 0.3), transparent);
 }
 
 .secondary-servers {
   flex: 1;
   background-color: #2f3136;
   overflow-y: auto;
+  position: relative;
 }
 
 .server-item {
   position: relative;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
 }
 
 .server-icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background-color: #36393f;
-  border-radius: 50%;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  transition: border-radius 0.2s;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .server-icon img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
 .server-name {
   color: #96989d;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
+  transition: color 0.3s ease;
 }
 
 .server-item:hover {
-  background-color: rgba(79, 84, 92, 0.6);
+  background-color: rgba(79, 84, 92, 0.3);
+  transform: translateX(4px);
 }
 
 .server-item:hover .server-icon {
-  border-radius: 16px;
+  border-radius: 12px;
   background-color: #5865f2;
+  transform: scale(1.05);
+}
+
+.server-item:hover .server-icon img {
+  transform: scale(1.1);
 }
 
 .server-item:hover .server-name {
@@ -294,16 +245,45 @@ onMounted(async () => {
 }
 
 .server-item.active {
-  background-color: #40444b;
+  background-color: rgba(88, 101, 242, 0.15);
 }
 
 .server-item.active .server-icon {
-  border-radius: 16px;
+  border-radius: 12px;
   background-color: #5865f2;
+  transform: scale(1.05);
 }
 
 .server-item.active .server-name {
   color: #ffffff;
+  font-weight: 600;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #ed4245;
+  border-radius: 50%;
+  border: 2px solid #2f3136;
+  transform: translate(25%, -25%);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(237, 66, 69, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(237, 66, 69, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(237, 66, 69, 0);
+  }
 }
 
 .child-servers {
