@@ -272,7 +272,7 @@ onUnmounted(() => {
 
       <div v-for="(msg, index) in Array.from(chatStore.messages.get(chatStore.currentRoomId) || [])" :key="String(msg.message.messageID)" :class="[`message`, {
           'merged': index > 0 &&
-            Array.from(chatStore.messages.get(chatStore.currentRoomId))[index - 1].message.roleId === msg.message.roleId &&
+            Array.from(chatStore.messages.get(chatStore.currentRoomId))[index - 1].message.avatarId === msg.message.avatarId &&
             new Date(msg.message.createTime).getTime() - new Date(Array.from(chatStore.messages.get(chatStore.currentRoomId))[index - 1].message.createTime).getTime() < 300000
         }]">
         <div class="character-portrait" @click="showAvatarSelectorDialog(msg.message.messageID, msg.message.roleId)">

@@ -25,6 +25,7 @@ export type { ApiResultFriendUnreadResp } from './models/ApiResultFriendUnreadRe
 export type { ApiResultFullPostResponse } from './models/ApiResultFullPostResponse';
 export type { ApiResultIdRespVO } from './models/ApiResultIdRespVO';
 export type { ApiResultListChatMemberResp } from './models/ApiResultListChatMemberResp';
+export type { ApiResultListChatMessageResponse } from './models/ApiResultListChatMessageResponse';
 export type { ApiResultListRoleAvatar } from './models/ApiResultListRoleAvatar';
 export type { ApiResultListRoomGroup } from './models/ApiResultListRoomGroup';
 export type { ApiResultListUserRole } from './models/ApiResultListUserRole';
