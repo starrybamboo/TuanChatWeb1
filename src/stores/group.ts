@@ -19,70 +19,84 @@ export interface RoomGroup {
 }
 
 export const useGroupStore = defineStore('group', () => {
-  // 当前群组ID
+  // 状态
   const currentGroupId = ref<number | null>(null)
-  
-  // 群组成员列表
-  const members = ref<GroupMember[]>([])
-  
-  // 群组角色映射
+  const members = ref<Map<number, GroupMember[]>>(new Map())
   const roleMap = ref<Map<number, any>>(new Map())
-
-  // 用户信息映射
   const userInfoMap = ref<Map<number, UserInfoResponse>>(new Map())
-
-  // 当前群组信息
   const currentGroup = ref<RoomGroup | null>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
   // 获取群组成员列表
   const fetchMembers = async (groupId: number) => {
+    if (!groupId) return
+    
+    loading.value = true
+    error.value = null
     try {
-      // 获取成员列表
-      const memberResponse = await tuanchat.roomGroupController.getMemberList({
-        roomId: groupId
-      })
+      const [memberResponse, roleResponse] = await Promise.all([
+        tuanchat.roomGroupController.getMemberList(groupId),
+        tuanchat.roomGroupController.groupRole(groupId)
+      ])
       
-      // 获取角色列表
-      const roleResponse = await tuanchat.roomGroupController.groupRole(groupId)
-      
-      if (memberResponse.data && roleResponse.data) {
-        // 创建角色映射
+      if (memberResponse.success && roleResponse.success && memberResponse.data && roleResponse.data) {
+        // 更新角色映射
         roleMap.value = new Map(roleResponse.data.map(role => [role.roleId, role]))
         
-        members.value = memberResponse.data.map(member => ({
+        // 更新成员列表
+        const membersList = memberResponse.data.map(member => ({
           uid: member.uid,
           roleId: member.roleId,
           memberType: member.memberType
         }))
-
-        // 获取所有成员的用户信息
-        await Promise.all(members.value.map(async member => {
-          if (member.uid) {
-            try {
-              const userInfoResponse = await tuanchat.userController.getUserInfo(member.uid)
-              if (userInfoResponse.data) {
-                userInfoMap.value.set(member.uid, userInfoResponse.data)
-              }
-            } catch (error) {
-              console.error(`获取用户 ${member.uid} 信息失败:`, error)
-            }
-          }
-        }))
+        members.value.set(groupId, membersList)
+        
+        // 批量获取用户信息
+        const userPromises = membersList
+          .filter(member => member.uid)
+          .map(member => 
+            tuanchat.userController.getUserInfo(member.uid!)
+              .then(response => {
+                if (response.success && response.data) {
+                  userInfoMap.value.set(member.uid!, response.data)
+                }
+              })
+              .catch(error => {
+                console.error(`获取用户 ${member.uid} 信息失败:`, error)
+              })
+          )
+        
+        await Promise.all(userPromises)
+      } else {
+        error.value = memberResponse.errMsg || roleResponse.errMsg || '获取群组数据失败'
       }
-    } catch (error) {
-      console.error('获取群组成员列表失败:', error)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '获取群组成员列表失败'
+      console.error('获取群组成员列表失败:', err)
+    } finally {
+      loading.value = false
     }
   }
 
   // 获取群组信息
   const fetchGroupInfo = async (groupId: number) => {
+    if (!groupId) return
+    
+    loading.value = true
+    error.value = null
     try {
       const response = await tuanchat.roomGroupController.groupDetail(groupId)
-      if (response.data) {
+      if (response.success && response.data) {
         currentGroup.value = response.data
+      } else {
+        error.value = response.errMsg || '获取群组信息失败'
       }
-    } catch (error) {
-      console.error('获取群组信息失败:', error)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '获取群组信息失败'
+      console.error('获取群组信息失败:', err)
+    } finally {
+      loading.value = false
     }
   }
 
@@ -108,11 +122,15 @@ export const useGroupStore = defineStore('group', () => {
   }
 
   return {
+    // 状态
     currentGroupId,
     currentGroup,
     members,
     roleMap,
     userInfoMap,
+    loading,
+    error,
+    // 方法
     fetchMembers,
     fetchGroupInfo,
     setCurrentGroupId,

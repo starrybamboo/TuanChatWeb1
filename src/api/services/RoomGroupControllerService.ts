@@ -17,7 +17,6 @@ import type { ChangeBackgroundReq } from '../models/ChangeBackgroundReq';
 import type { GroupAddRequest } from '../models/GroupAddRequest';
 import type { MemberAddRequest } from '../models/MemberAddRequest';
 import type { MemberDelRequest } from '../models/MemberDelRequest';
-import type { MemberRequest } from '../models/MemberRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class RoomGroupControllerService {
@@ -192,18 +191,18 @@ export class RoomGroupControllerService {
         });
     }
     /**
-     * @param request
+     * @param roomId
      * @returns ApiResultListChatMemberResp OK
      * @throws ApiError
      */
     public getMemberList(
-        request: MemberRequest,
+        roomId: number,
     ): CancelablePromise<ApiResultListChatMemberResp> {
         return this.httpRequest.request({
             method: 'GET',
             url: '/capi/room/group/member/list',
             query: {
-                'request': request,
+                'roomId': roomId,
             },
             errors: {
                 400: `Bad Request`,

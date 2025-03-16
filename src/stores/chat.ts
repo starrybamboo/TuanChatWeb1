@@ -6,8 +6,13 @@ import { useAvatarStore } from '@/stores/avatar'
 import type { ChatMessageRequest, ChatMessageResponse, Message } from '@/api/models'
 
 export const useChatStore = defineStore('chat', () => {
-  const messages = ref<ChatMessageResponse[]>([])
-  const currentRoomId = ref<number | null>(null)
+  // 初始化聊天室
+  function initializeChat(groupId: number) {
+    currentRoomId.value = groupId
+  }
+  
+  const messages = ref<Map<number, ChatMessageResponse[]>>(new Map())
+  const currentRoomId = ref<number>(0)
   const chatControllerApi = tuanchat.chatController
   const avatarStore = useAvatarStore()
   const roomCursors = ref<Map<number, number>>(new Map())
@@ -30,7 +35,8 @@ export const useChatStore = defineStore('chat', () => {
       })
       
       if (response.data?.list) {
-        messages.value = [...response.data.list, ...messages.value]
+        const roomMessages = messages.value.get(roomId) || [];
+      messages.value.set(roomId, [...response.data.list, ...roomMessages])
         // 更新房间的cursor
         if (response.data.cursor) {
           roomCursors.value.set(roomId, response.data.cursor)
@@ -60,14 +66,20 @@ export const useChatStore = defineStore('chat', () => {
 
   // 处理新消息
   function handleNewMessage(message: ChatMessageResponse) {
-    messages.value.push(message)
+    const roomId = currentRoomId.value;
+    if (roomId) {
+      const roomMessages = messages.value.get(roomId) || [];
+      messages.value.set(roomId, [...roomMessages, message])
+    }
   }
 
   // 处理消息撤回
   function handleMessageRecall(messageId: number) {
-    const index = messages.value.findIndex(msg => msg.message.messageID === messageId)
-    if (index !== -1) {
-      messages.value.splice(index, 1)
+    const roomId = currentRoomId.value;
+    if (roomId) {
+      const roomMessages = messages.value.get(roomId) || [];
+      const updatedMessages = roomMessages.filter(msg => msg.message.messageID !== messageId);
+      messages.value.set(roomId, updatedMessages);
     }
   }
 
@@ -85,9 +97,15 @@ export const useChatStore = defineStore('chat', () => {
 
   // 处理消息更新
   function handleMessageUpdate(message: Message) {
-    const index = messages.value.findIndex(msg => msg.message.messageID === message.messageID)
-    if (index !== -1) {
-      messages.value[index].message = message
+    const roomId = currentRoomId.value;
+    if (roomId) {
+      const roomMessages = messages.value.get(roomId) || [];
+      const updatedMessages = roomMessages.map(msg =>
+        msg.message.messageID === message.messageID
+          ? { ...msg, message: message }
+          : msg
+      );
+      messages.value.set(roomId, updatedMessages);
     }
   }
 
@@ -105,6 +123,7 @@ export const useChatStore = defineStore('chat', () => {
     sendMessage,
     updateMessage,
     initializeWebSocket,
-    getMessageAvatarUrl
+    getMessageAvatarUrl,
+    initializeChat
   }
 })

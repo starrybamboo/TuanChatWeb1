@@ -67,11 +67,11 @@ onMounted(async () => {
   <div class="members-sidebar" v-if="showMemberList">
     <!-- 成员列表 -->
     <div class="list-section">
-      <div class="members-header">成员列表 - {{ groupStore.members.length }}</div>
+      <div class="members-header">成员列表 - {{ groupStore.members.get(groupStore.currentGroupId || 0)?.length || 0 }}</div>
       <div class="members-groups">
         <div class="member-list">
           <div 
-            v-for="member in groupStore.members" 
+            v-for="member in groupStore.members.get(groupStore.currentGroupId || 0) || []" 
             :key="member.uid" 
             class="member-item"
           >

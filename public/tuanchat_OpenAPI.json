@@ -2504,11 +2504,12 @@
         "operationId": "getMemberList",
         "parameters": [
           {
-            "name": "request",
+            "name": "roomId",
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/MemberRequest"
+              "type": "integer",
+              "format": "int64"
             }
           }
         ],
@@ -3194,6 +3195,27 @@
   },
   "components": {
     "schemas": {
+      "ApiResultVoid": {
+        "required": [
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "errCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errMsg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
       "ApiResult": {
         "required": [
           "success"
@@ -3216,27 +3238,6 @@
         }
       },
       "ApiResultObject": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "type": "object"
-          }
-        }
-      },
-      "ApiResultVoid": {
         "required": [
           "success"
         ],
@@ -4332,23 +4333,6 @@
             "items": {
               "$ref": "#/components/schemas/UserRole"
             }
-          }
-        }
-      },
-      "MemberRequest": {
-        "type": "object",
-        "properties": {
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },

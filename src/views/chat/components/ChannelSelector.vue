@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useGroupStore } from '@/stores/group'
 import { tuanchat } from '@/api/instance'
+import ChatContent from './ChatContent.vue'
 
 const groupStore = useGroupStore()
 
@@ -68,11 +69,19 @@ const updateSubGroups = (serverId: number) => {
 const activeChannelId = ref(1);
 
 // 切换二级群组
+const props = defineProps<{
+  chatContentRef: InstanceType<typeof ChatContent>
+}>();
+
 const switchSubGroup = (subGroupId: number) => {
   // 更新选中状态
   activeSubGroupId.value = subGroupId;
   // 更新当前群组ID
   groupStore.setCurrentGroupId(subGroupId);
+  // 调用ChatContent组件的初始化方法
+  if (props.chatContentRef?.initializeChat) {
+    props.chatContentRef.initializeChat(subGroupId);
+  }
 };
 
 // 初始化时设置默认群组并获取群组列表

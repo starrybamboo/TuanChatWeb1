@@ -6,6 +6,7 @@ import { useGroupStore } from '@/stores/group'
 import MessageInput from './MessageInput.vue'
 import AvatarSelector from './AvatarSelector.vue'
 import { Search, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
+import type { ChatMessageResponse } from '@/api'
 
 defineEmits(['show-avatar-selector', 'toggle-member-list'])
 
@@ -14,6 +15,7 @@ const roleStore = useRoleStore()
 const groupStore = useGroupStore();
 const loading = ref(false)
 const hasMore = ref(true)
+
 
 // 编辑相关的状态
 const editingMessage = ref<any>(null)
@@ -31,7 +33,8 @@ function searchMessages() {
   if (!searchQuery.value.trim()) return
 
   const query = searchQuery.value.toLowerCase()
-  chatStore.messages.forEach((msg, index) => {
+  const messages: ChatMessageResponse[] = Array.from(chatStore.messages.get(chatStore.currentRoomId) || [])
+  messages.forEach((msg, index) => {
     if (msg.message.content && msg.message.content.toLowerCase().includes(query)) {
       searchResults.value.push(index)
     }
@@ -67,9 +70,10 @@ function scrollToMessage(index: number) {
 }
 
 // 初始化聊天
-async function initializeChat(roomId: number) {
+const initializeChat = async (roomId: number) => {
   chatStore.currentRoomId = roomId
   loading.value = true
+  // 清空当前消息列表
 
   try {
     // 加载消息
@@ -103,13 +107,25 @@ async function initializeChat(roomId: number) {
   }
 }
 
+// 导出初始化方法供外部调用
+defineExpose({
+  initializeChat
+})
+
+onMounted(() => {
+  const messagesContainer = document.querySelector('.messages-container')
+  if (messagesContainer) {
+    messagesContainer.addEventListener('scroll', handleScroll)
+  }
+})
+
 // 加载更多消息
 async function loadMoreMessages() {
   if (!hasMore.value || loading.value || !chatStore.currentRoomId) return
 
   loading.value = true
   try {
-    const firstMessage = chatStore.messages[0]
+    const firstMessage = chatStore.messages.get(chatStore.currentRoomId)?.[0]
     if (firstMessage) {
       const messagesContainer = document.querySelector('.messages-container')
       const oldHeight = messagesContainer?.scrollHeight || 0
@@ -253,10 +269,10 @@ onUnmounted(() => {
         加载中...
       </div>
 
-      <div v-for="(msg, index) in chatStore.messages" :key="String(msg.message.messageID)" :class="[`message`, {
+      <div v-for="(msg, index) in Array.from(chatStore.messages.get(chatStore.currentRoomId) || [])" :key="String(msg.message.messageID)" :class="[`message`, {
           'merged': index > 0 &&
-            chatStore.messages[index - 1].message.roleId === msg.message.roleId &&
-            new Date(msg.message.createTime).getTime() - new Date(chatStore.messages[index - 1].message.createTime).getTime() < 300000
+            Array.from(chatStore.messages.get(chatStore.currentRoomId))[index - 1].message.roleId === msg.message.roleId &&
+            new Date(msg.message.createTime).getTime() - new Date(Array.from(chatStore.messages.get(chatStore.currentRoomId))[index - 1].message.createTime).getTime() < 300000
         }]">
         <div class="character-portrait" @click="showAvatarSelectorDialog(msg.message.messageID, msg.message.roleId)">
           <el-avatar :size="80" :src="chatStore.getMessageAvatarUrl(msg.message.avatarId)" class="portrait-image" />

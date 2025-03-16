@@ -11,6 +11,7 @@ import AvatarSelector from './components/AvatarSelector.vue'
 const chatStore = useChatStore()
 const roleStore = useRoleStore()
 const memberListRef = ref()
+const chatContentRef = ref()
 const showAvatarSelector = ref(false)
 
 // 选择头像
@@ -29,8 +30,9 @@ onMounted(() => {
 
 <template>
   <div class="discord-container">
-    <ChannelSelector />
+    <ChannelSelector :chat-content-ref="chatContentRef" />
     <ChatContent 
+      ref="chatContentRef"
       @toggle-member-list="memberListRef?.toggleMemberList()"
       @show-avatar-selector="showAvatarSelector = true"
     />

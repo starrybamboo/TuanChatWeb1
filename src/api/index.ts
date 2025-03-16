@@ -65,7 +65,6 @@ export type { GroupAddRequest } from './models/GroupAddRequest';
 export type { IdRespVO } from './models/IdRespVO';
 export type { MemberAddRequest } from './models/MemberAddRequest';
 export type { MemberDelRequest } from './models/MemberDelRequest';
-export type { MemberRequest } from './models/MemberRequest';
 export type { Message } from './models/Message';
 export type { MessageExtra } from './models/MessageExtra';
 export type { MessageMark } from './models/MessageMark';
