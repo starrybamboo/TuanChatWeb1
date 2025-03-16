@@ -5,7 +5,7 @@
 import type { Message } from './Message';
 import type { MessageMark } from './MessageMark';
 export type ChatMessageResponse = {
-    message?: Message;
+    message: Message;
     messageMark?: Array<MessageMark>;
 };
 

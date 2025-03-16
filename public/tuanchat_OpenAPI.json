@@ -3604,6 +3604,10 @@
         }
       },
       "RoleAvatar": {
+        "required": [
+          "avatarId",
+          "roleId"
+        ],
         "type": "object",
         "properties": {
           "roleId": {
@@ -3645,15 +3649,6 @@
           },
           "password": {
             "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
           }
         }
       },
@@ -3686,8 +3681,7 @@
         "type": "object",
         "properties": {
           "userId": {
-            "type": "integer",
-            "format": "int64"
+            "type": "string"
           },
           "password": {
             "type": "string"
@@ -3959,6 +3953,9 @@
         }
       },
       "ChatMessageResponse": {
+        "required": [
+          "message"
+        ],
         "type": "object",
         "properties": {
           "message": {

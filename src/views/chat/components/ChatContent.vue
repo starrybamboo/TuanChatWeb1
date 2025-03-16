@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useRoleStore } from '@/stores/role'
 import MessageInput from './MessageInput.vue'
+import AvatarSelector from './AvatarSelector.vue'
 
 defineEmits(['show-avatar-selector', 'toggle-member-list'])
 
@@ -10,6 +11,11 @@ const chatStore = useChatStore()
 const roleStore = useRoleStore()
 const loading = ref(false)
 const hasMore = ref(true)
+
+// 编辑相关的状态
+const editingMessage = ref<any>(null)
+const showAvatarSelector = ref(false)
+const selectedMessageId = ref<number | null>(null)
 
 // 初始化聊天
 async function initializeChat(roomId: number) {
@@ -85,6 +91,48 @@ function handleScroll(e: Event) {
   }
 }
 
+// 开始编辑消息
+function startEditMessage(msg: any) {
+  editingMessage.value = { ...msg.message }
+}
+
+// 保存编辑的消息
+async function saveEditMessage() {
+  if (!editingMessage.value) return
+  
+  try {
+    await chatStore.updateMessage(editingMessage.value)
+    editingMessage.value = null
+  } catch (error) {
+    console.error('Failed to save message:', error)
+  }
+}
+
+// 取消编辑消息
+function cancelEditMessage() {
+  editingMessage.value = null
+}
+
+// 处理头像选择
+function handleSelectAvatar(avatarId: number) {
+  if (!selectedMessageId.value) return
+  
+  const message = chatStore.messages.find(msg => msg.message.messageID === selectedMessageId.value)
+  if (message) {
+    const updatedMessage = { ...message.message, avatarId }
+    chatStore.updateMessage(updatedMessage)
+  }
+  
+  showAvatarSelector.value = false
+  selectedMessageId.value = null
+}
+
+// 显示头像选择器
+function showAvatarSelectorDialog(messageId: number, roleId: number) {
+  selectedMessageId.value = messageId
+  
+  showAvatarSelector.value = true
+}
 
 onMounted(() => {
   // 初始化默认房间的消息
@@ -124,13 +172,13 @@ onUnmounted(() => {
         加载中...
       </div>
       
-      <div v-for="(msg, index) in chatStore.messages" :key="msg.message.messageID" 
+      <div v-for="(msg, index) in chatStore.messages" :key="String(msg.message.messageID)" 
            :class="[`message`, {
              'merged': index > 0 && 
                       chatStore.messages[index - 1].message.roleId === msg.message.roleId&&
                       new Date(msg.message.createTime).getTime() - new Date(chatStore.messages[index - 1].message.createTime).getTime() < 300000
            }]">
-        <div class="character-portrait">
+        <div class="character-portrait" @click="showAvatarSelectorDialog(msg.message.messageID, msg.message.roleId)">
           <el-avatar :size="80" :src="chatStore.getMessageAvatarUrl(msg.message.avatarId)" class="portrait-image"/>
         </div>
         <div class="message-box">
@@ -138,7 +186,22 @@ onUnmounted(() => {
             {{ roleStore.getRoleNameById(msg.message.roleId) }}
           </div>
           <div class="message-content">
-            <div class="message-text">{{ msg.message.content }}</div>
+            <div class="message-text" @click="startEditMessage(msg)" v-if="editingMessage?.messageID !== msg.message.messageID">
+              {{ msg.message.content }}
+            </div>
+            <div v-else class="message-edit">
+              <el-input
+                v-model="editingMessage.content"
+                type="textarea"
+                :rows="3"
+                @keydown.enter.prevent="saveEditMessage"
+                @keyup.esc="cancelEditMessage"
+              />
+              <div class="edit-actions">
+                <el-button size="small" @click="saveEditMessage">保存</el-button>
+                <el-button size="small" @click="cancelEditMessage">取消</el-button>
+              </div>
+            </div>
             <div class="message-timestamp">{{ new Date(msg.message.createTime).toLocaleString() }}</div>
           </div>
         </div>
@@ -146,6 +209,12 @@ onUnmounted(() => {
     </div>
     
     <MessageInput @show-avatar-selector="$emit('show-avatar-selector')" />
+    
+    <AvatarSelector
+      v-model:show="showAvatarSelector"
+      :role-id="selectedMessageId ? chatStore.messages.find(msg => msg.message.messageID === selectedMessageId)?.message.roleId : undefined"
+      @select="handleSelectAvatar"
+    />
   </div>
 </template>
 
@@ -288,30 +357,29 @@ onUnmounted(() => {
   gap: 8px;
 }
 
+.message-edit {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .message-text {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #dcddde;
-  margin: 0;
-  padding: 8px 0;
+  cursor: pointer;
   white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
+  word-break: break-word;
   max-width: 100%;
-  flex: 1;
+  overflow-wrap: break-word;
 }
 
-.message-timestamp {
-  font-size: 0.75rem;
-  color: #72767d;
-  white-space: nowrap;
-}
-
-.loading-messages {
-  text-align: center;
-  padding: 20px;
-  color: #fff;
-  font-size: 16px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+.message-text:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: -4px -8px;
 }
 </style>

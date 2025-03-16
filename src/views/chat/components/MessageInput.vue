@@ -27,7 +27,7 @@ async function sendMessage() {
     content: newMessage.value,
     messageType: 1, // 文本消息
     roleId: roleStore.currentRole.roleId,
-    avatarId: roleStore.currentRole.avatarId,
+    avatarId: roleStore.currentRole.avatarId || 0n,
     body: {}
   })
 

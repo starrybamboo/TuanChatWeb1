@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { useAvatarStore } from '@/stores/avatar';
 import { ElMessage } from 'element-plus';
-import type { RoleAvatar } from '@/api/models/RoleAvatar';
+import type { RoleAvatar } from '@/api';
 
 interface Props {
   show: boolean;
@@ -69,7 +69,7 @@ watch(() => props.show, async (newVal) => {
       <template v-if="avatars.length > 0">
         <div
           v-for="avatar in avatars"
-          :key="avatar.avatarId"
+          :key="String(avatar.avatarId)"
           class="avatar-item"
           @click="handleSelectAvatar(avatar.avatarId!)"
         >

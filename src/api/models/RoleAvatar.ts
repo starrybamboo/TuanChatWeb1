@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type RoleAvatar = {
-    roleId?: number;
-    avatarId?: number;
+    roleId: number;
+    avatarId: number;
     avatarTitle?: string;
     avatarUrl?: string;
     spriteUrl?: string;

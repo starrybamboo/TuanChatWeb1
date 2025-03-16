@@ -71,10 +71,31 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  // 更新消息
+  async function updateMessage(message: Message) {
+    try {
+      const response = await chatControllerApi.updateMessage(message)
+      if (response.success && response.data) {
+        handleMessageUpdate(response.data)
+      }
+    } catch (error) {
+      console.error('Failed to update message:', error)
+    }
+  }
+
+  // 处理消息更新
+  function handleMessageUpdate(message: Message) {
+    const index = messages.value.findIndex(msg => msg.message.messageID === message.messageID)
+    if (index !== -1) {
+      messages.value[index].message = message
+    }
+  }
+
   // 初始化WebSocket监听器
   function initializeWebSocket() {
     wsService.on('newMessage', handleNewMessage)
     wsService.on('messageRecall', handleMessageRecall)
+    wsService.on('messageUpdate', handleMessageUpdate)
   }
 
   return {
@@ -82,6 +103,7 @@ export const useChatStore = defineStore('chat', () => {
     currentRoomId,
     loadMessages,
     sendMessage,
+    updateMessage,
     initializeWebSocket,
     getMessageAvatarUrl
   }
