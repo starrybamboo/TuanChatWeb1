@@ -9,6 +9,15 @@ export interface GroupMember {
   memberType?: number
 }
 
+export interface RoomGroup {
+  roomId?: number
+  roomName?: string
+  roomDesc?: string
+  roomBackground?: string
+  createTime?: string
+  updateTime?: string
+}
+
 export const useGroupStore = defineStore('group', () => {
   // 当前群组ID
   const currentGroupId = ref<number | null>(null)
@@ -21,6 +30,9 @@ export const useGroupStore = defineStore('group', () => {
 
   // 用户信息映射
   const userInfoMap = ref<Map<number, UserInfoResponse>>(new Map())
+
+  // 当前群组信息
+  const currentGroup = ref<RoomGroup | null>(null)
 
   // 获取群组成员列表
   const fetchMembers = async (groupId: number) => {
@@ -62,10 +74,23 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
+  // 获取群组信息
+  const fetchGroupInfo = async (groupId: number) => {
+    try {
+      const response = await tuanchat.roomGroupController.groupDetail(groupId)
+      if (response.data) {
+        currentGroup.value = response.data
+      }
+    } catch (error) {
+      console.error('获取群组信息失败:', error)
+    }
+  }
+
   // 设置当前群组ID
   const setCurrentGroupId = (groupId: number) => {
     currentGroupId.value = groupId
     fetchMembers(groupId)
+    fetchGroupInfo(groupId)
   }
 
   // 获取成员类型文字说明
@@ -84,10 +109,12 @@ export const useGroupStore = defineStore('group', () => {
 
   return {
     currentGroupId,
+    currentGroup,
     members,
     roleMap,
     userInfoMap,
     fetchMembers,
+    fetchGroupInfo,
     setCurrentGroupId,
     getMemberTypeText
   }

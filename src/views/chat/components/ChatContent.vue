@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useRoleStore } from '@/stores/role'
+import { useGroupStore } from '@/stores/group'
 import MessageInput from './MessageInput.vue'
 import AvatarSelector from './AvatarSelector.vue'
 
@@ -9,6 +10,7 @@ defineEmits(['show-avatar-selector', 'toggle-member-list'])
 
 const chatStore = useChatStore()
 const roleStore = useRoleStore()
+const groupStore = useGroupStore();
 const loading = ref(false)
 const hasMore = ref(true)
 
@@ -156,7 +158,7 @@ onUnmounted(() => {
   <div class="main-content">
     <div class="content-header">
       <div class="header-title">
-        <span>故事回顾</span>
+        <span>{{ groupStore.currentGroup?.roomName || '故事回顾' }}</span>
       </div>
       <div class="header-actions">
         <button class="header-btn" @click="$emit('toggle-member-list')">
