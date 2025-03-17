@@ -7,8 +7,10 @@ import MessageInput from './MessageInput.vue'
 import AvatarSelector from './AvatarSelector.vue'
 import { Search, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 import type { ChatMessageResponse } from '@/api'
+import { ChatRenderer } from '@/renderer/chatRenderer'
+import { ElMessage } from 'element-plus'
 
-defineEmits(['show-avatar-selector', 'toggle-member-list'])
+defineEmits(['show-avatar-selector', 'toggle-member-list', 'show-role-selector'])
 
 const chatStore = useChatStore()
 const roleStore = useRoleStore()
@@ -204,6 +206,28 @@ function showAvatarSelectorDialog(messageId: number, roleId: number) {
   showAvatarSelector.value = true
 }
 
+// 添加渲染相关的状态
+const isRendering = ref(false)
+
+// 添加渲染方法
+async function handleRender() {
+  if (!chatStore.currentRoomId || isRendering.value) return
+  
+  isRendering.value = true
+  try {
+    const renderer = new ChatRenderer(chatStore.currentRoomId)
+    await renderer.initializeRenderer()
+    // const gameService = new ChatGameService(chatStore.currentRoomId)
+    // await gameService.initialize()
+    ElMessage.success('渲染完成')
+  } catch (error) {
+    console.error('Rendering failed:', error)
+    ElMessage.error('渲染失败')
+  } finally {
+    isRendering.value = false
+  }
+}
+
 onMounted(() => {
   // 等待ChannelSelector组件选择默认群组
   if (groupStore.currentGroupId) {
@@ -255,6 +279,14 @@ onUnmounted(() => {
         </span>
       </div>
       <div class="header-actions">
+        <el-button
+          type="primary"
+          :loading="isRendering"
+          @click="handleRender"
+          class="render-btn"
+        >
+          {{ isRendering ? '渲染中...' : '渲染对话' }}
+        </el-button>
         <button class="header-btn" @click="$emit('toggle-member-list')">
           <svg width="24" height="24" viewBox="0 0 24 24">
             <path fill="currentColor"
@@ -302,7 +334,10 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <MessageInput @show-avatar-selector="$emit('show-avatar-selector')" />
+    <MessageInput 
+      @show-avatar-selector="$emit('show-avatar-selector')"
+      @show-role-selector="$emit('show-role-selector')"
+    />
 
     <AvatarSelector v-model:show="showAvatarSelector"
       :role-id="selectedMessageId ? Array.from(chatStore.messages.get(chatStore.currentRoomId) || []).find(msg => msg.message.messageID === selectedMessageId)?.message.roleId : undefined"
@@ -502,5 +537,16 @@ onUnmounted(() => {
   border-radius: 4px;
   padding: 4px 8px;
   margin: -4px -8px;
+}
+
+.render-btn {
+  margin-right: 12px;
+  height: 32px;
+  font-size: 14px;
+  padding: 0 16px;
+}
+
+.render-btn:hover {
+  opacity: 0.9;
 }
 </style>

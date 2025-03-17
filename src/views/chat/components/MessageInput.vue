@@ -8,7 +8,6 @@ const chatStore = useChatStore()
 const roleStore = useRoleStore()
 const avatarStore = useAvatarStore()
 const newMessage = ref('')
-const showRoleSelector = ref(false)
 
 // 在组件挂载时获取角色列表
 onMounted(async () => {
@@ -45,9 +44,9 @@ async function sendMessage() {
       </div>
     </div>
     <div style="flex: 1; min-width: 0; width: 100%;">
-      <div class="role-name" @click="showRoleSelector = true">
-      {{ roleStore.currentRole?.roleName || '选择角色' }}
-    </div>
+      <div class="role-name" @click="$emit('show-role-selector')">
+        {{ roleStore.currentRole?.roleName || '选择角色' }}
+      </div>
     <div class="input-wrapper">
       <button class="attach-btn">
         <svg width="24" height="24" viewBox="0 0 24 24">

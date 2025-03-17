@@ -45,9 +45,11 @@ export class Renderer {
     })
   }
 
-  public addDialog(roleId: number, roleName: string, avatarId: number, text: string): void {
-    this.addLineToRenderer(`changeFigure:role_${roleId}_sprites_${avatarId}.png -left -next;`)
-    this.addLineToRenderer(`${roleName}: ${text}`)
+  public async addDialog(roleId: number, roleName: string, avatarId: number, text: string): Promise<void> {
+    // 确保sprites名称与ChatRenderer中的格式匹配
+    const spritesName = `role_${roleId}_sprites_${avatarId}`
+    await this.addLineToRenderer(`changeFigure:${spritesName}.png -left -next;`)
+    await this.addLineToRenderer(`${roleName}: ${text}`)
     this.rendererContext.lineNumber += 2
   }
 
@@ -62,7 +64,12 @@ export class Renderer {
   }
 
   private async addLineToRenderer(line: string): Promise<void> {
-    this.rendererContext.text = `${this.rendererContext.text}\n${line}`
-    editScene(this.game.name, 'start', this.rendererContext.text)
+    if (!line.trim()) return // 跳过空消息
+    
+    this.rendererContext.text = this.rendererContext.text 
+        ? `${this.rendererContext.text}\n${line}`
+        : line
+        
+    await editScene(this.game.name, 'start', this.rendererContext.text)
   }
 }
