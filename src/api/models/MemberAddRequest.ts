@@ -4,6 +4,6 @@
 /* eslint-disable */
 export type MemberAddRequest = {
     roomId: number;
-    uidList: Array<number>;
+    userIdList: Array<number>;
 };
 

@@ -35,7 +35,7 @@ function searchMessages() {
   if (!searchQuery.value.trim()) return
 
   const query = searchQuery.value.toLowerCase()
-  const messages: ChatMessageResponse[] = Array.from(chatStore.messages.get(chatStore.currentRoomId) || [])
+  const messages = ref<ChatMessageResponse[]>([])
   messages.forEach((msg, index) => {
     if (msg.message.content && msg.message.content.toLowerCase().includes(query)) {
       searchResults.value.push(index)
@@ -75,7 +75,6 @@ function scrollToMessage(index: number) {
 const initializeChat = async (roomId: number) => {
   chatStore.currentRoomId = roomId
   loading.value = true
-  // 清空当前消息列表
 
   try {
     // 加载消息
@@ -84,7 +83,8 @@ const initializeChat = async (roomId: number) => {
 
     // 预加载所有消息中的角色信息
     if (result?.list) {
-      const roleIds = new Set(result.list.map(msg => msg.message.roleId))
+      chatStore.messages.set(chatStore.currentRoomId, result.list)
+      const roleIds = new Set(result.list.map(msg => Number(msg.message.roleId)))
 
       await Promise.all(Array.from(roleIds).map(async roleId => {
         const role = await roleStore.fetchRoleById(roleId)
@@ -191,7 +191,7 @@ function handleSelectAvatar(avatarId: number) {
   const currentRoomMessages = chatStore.messages.get(chatStore.currentRoomId) || []
   const message = currentRoomMessages.find(msg => msg.message.messageID === selectedMessageId.value)
   if (message) {
-    const updatedMessage = { ...message.message, avatarId }
+    const updatedMessage = { ...message.message, avatarId: avatarId }
     chatStore.updateMessage(updatedMessage)
   }
 

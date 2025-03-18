@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ApiResultOssResp } from '../models/ApiResultOssResp';
-import type { UploadUrlReq } from '../models/UploadUrlReq';
+import type { UploadUrlRequest } from '../models/UploadUrlRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class OssControllerService {
@@ -14,7 +14,7 @@ export class OssControllerService {
      * @throws ApiError
      */
     public getUploadUrl(
-        requestBody: UploadUrlReq,
+        requestBody: UploadUrlRequest,
     ): CancelablePromise<ApiResultOssResp> {
         return this.httpRequest.request({
             method: 'POST',

@@ -4,7 +4,6 @@
 /* eslint-disable */
 export type ChatMemberResp = {
     uid?: number;
-    roleId?: number;
     memberType?: number;
 };
 

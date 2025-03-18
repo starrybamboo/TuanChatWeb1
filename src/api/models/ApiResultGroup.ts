@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CursorPageBaseResponsePost } from './CursorPageBaseResponsePost';
-export type ApiResultCursorPageBaseResponsePost = {
+import type { Group } from './Group';
+export type ApiResultGroup = {
     success: boolean;
     errCode?: number;
     errMsg?: string;
-    data?: CursorPageBaseResponsePost;
+    data?: Group;
 };
 

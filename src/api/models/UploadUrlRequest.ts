@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ChangeBackgroundReq = {
-    backgroundUrl?: string;
-    roomId?: number;
+export type UploadUrlRequest = {
+    fileName: string;
+    scene: number;
 };
 

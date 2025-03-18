@@ -24,32 +24,39 @@ const activeServerId = ref<number | null>(null);
 // 初始化服务器列表
 const initServers = async () => {
   try {
-    const response = await tuanchat.roomGroupController.getUserGroups()
+    const response = await tuanchat.groupController.getUserGroups()
+    console.log("获取到的群聊是：", response.data)
     if (response.data) {
       // 分离一级群组和二级群组
-      const firstLevelGroups = response.data.filter(group => group.parentGroupId == group.roomId)
+      const firstLevelGroups = response.data.filter(group => group.parentGroupId === group.roomId)
       const secondLevelGroups = response.data
 
       // 更新服务器列表，将二级群组作为一级群组的子元素
       servers.value = firstLevelGroups.map(group => ({
-        id: group.roomId,
+        id: Number(group.roomId),
         name: group.name,
         icon: group.avatar || '🏠',
         hasNotification: false,
         children: secondLevelGroups
           .filter(subGroup => subGroup.parentGroupId === group.roomId)
           .map(subGroup => ({
-            id: subGroup.roomId,
+            id: Number(subGroup.roomId),
             name: subGroup.name,
             icon: subGroup.avatar || '📚',
             hasNotification: false
           }))
       }))
+
+      // 如果有群组，默认选中第一个
+      if (servers.value.length > 0) {
+        activeServerId.value = servers.value[0].id;
+        updateSubGroups(servers.value[0].id);
+      }
     }
   } catch (error) {
     console.error('获取群组列表失败:', error)
   }
-}
+};
 
 // 当前选中的二级群组ID
 const activeSubGroupId = ref<number | null>(null);

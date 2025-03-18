@@ -104,7 +104,7 @@ export const useRoleStore = defineStore('role', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await tuanchat.roleController.deleteRole1(id);
+        const response = await tuanchat.roleController.deleteRole(id);
         if (response.success) {
           this.roles = this.roles.filter(role => role.roleId !== id);
           if (this.currentRole && this.currentRole.roleId === id) {

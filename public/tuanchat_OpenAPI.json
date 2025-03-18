@@ -17,282 +17,6 @@
     }
   ],
   "paths": {
-    "/capi/user/friend/apply": {
-      "put": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "applyApprove",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FriendApproveReq"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "apply",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FriendApplyReq"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/player": {
-      "put": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "addAdmin",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AdminAddReq"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultBoolean"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "revokeAdmin",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AdminRevokeReq"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultBoolean"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/capi/role": {
       "get": {
         "tags": [
@@ -493,7 +217,7 @@
         "tags": [
           "role-controller"
         ],
-        "operationId": "deleteRole_1",
+        "operationId": "deleteRole",
         "parameters": [
           {
             "name": "roleId",
@@ -559,86 +283,17 @@
         }
       }
     },
-    "/capi/community/post": {
-      "get": {
-        "tags": [
-          "community-controller"
-        ],
-        "operationId": "getPost",
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultPost"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/capi/group/member/player": {
       "put": {
         "tags": [
-          "community-controller"
+          "group-member-controller"
         ],
-        "operationId": "modifyPost",
+        "operationId": "setPlayer",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Post"
+                "$ref": "#/components/schemas/AdminAddRequset"
               }
             }
           },
@@ -650,75 +305,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "community-controller"
-        ],
-        "operationId": "publishPost",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPostRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
+                  "$ref": "#/components/schemas/ApiResultBoolean"
                 }
               }
             }
@@ -767,27 +354,26 @@
       },
       "delete": {
         "tags": [
-          "community-controller"
+          "group-member-controller"
         ],
-        "operationId": "deletePost",
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
+        "operationId": "revokePlayer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRevokeRequest"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
+                  "$ref": "#/components/schemas/ApiResultBoolean"
                 }
               }
             }
@@ -914,76 +500,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ChatMessageRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/chat/message/mark": {
-      "put": {
-        "tags": [
-          "chat-controller"
-        ],
-        "operationId": "setMsgMark",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChatMessageMarkRequest"
               }
             }
           },
@@ -1459,352 +975,6 @@
         }
       }
     },
-    "/capi/room/group/role": {
-      "post": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "addRole",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddRoleRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "deleteRole",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddRoleRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/member": {
-      "post": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "addMember",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MemberAddRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "deleteMember",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MemberDelRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/": {
-      "post": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "createGroup",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GroupAddRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultIdRespVO"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/capi/role/ability": {
       "get": {
         "tags": [
@@ -1954,7 +1124,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UploadUrlReq"
+                "$ref": "#/components/schemas/UploadUrlRequest"
               }
             }
           },
@@ -1967,6 +1137,422 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResultOssResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/group/subgroup": {
+      "post": {
+        "tags": [
+          "group-controller"
+        ],
+        "operationId": "createSubgroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubRoomRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultGroup"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/group/role/": {
+      "post": {
+        "tags": [
+          "group-role-controller"
+        ],
+        "operationId": "addRole",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "group-role-controller"
+        ],
+        "operationId": "deleteRole_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/group/member/": {
+      "post": {
+        "tags": [
+          "group-member-controller"
+        ],
+        "operationId": "addMember",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "group-member-controller"
+        ],
+        "operationId": "deleteMember",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/group/": {
+      "post": {
+        "tags": [
+          "group-controller"
+        ],
+        "operationId": "createGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultGroup"
                 }
               }
             }
@@ -2108,619 +1694,6 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResultUserInfoResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/user/friend/page": {
-      "get": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "friendList",
-        "parameters": [
-          {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/CursorPageBaseReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultCursorPageBaseResponseFriendResp"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/user/friend/check": {
-      "get": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "check",
-        "parameters": [
-          {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/FriendCheckReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultFriendCheckResp"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/user/friend/apply/unread": {
-      "get": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "unread",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultFriendUnreadResp"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/user/friend/apply/page": {
-      "get": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "page",
-        "parameters": [
-          {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/CursorPageBaseReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultCursorPageBaseResponseFriendApplyResp"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/role/list": {
-      "get": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "groupRole",
-        "parameters": [
-          {
-            "name": "roomId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultListUserRole"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/member/list": {
-      "get": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "getMemberList",
-        "parameters": [
-          {
-            "name": "roomId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultListChatMemberResp"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/list": {
-      "get": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "getUserGroups",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultListRoomGroup"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/info": {
-      "get": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "groupDetail",
-        "parameters": [
-          {
-            "name": "roomId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultRoomResp"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/capi/room/group/background/list": {
-      "get": {
-        "tags": [
-          "room-group-controller"
-        ],
-        "operationId": "changeGroupBackground",
-        "parameters": [
-          {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/ChangeBackgroundReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
                 }
               }
             }
@@ -2910,19 +1883,20 @@
         }
       }
     },
-    "/capi/community/post/page": {
+    "/capi/group/{groupId}": {
       "get": {
         "tags": [
-          "community-controller"
+          "group-controller"
         ],
-        "operationId": "getPostPage",
+        "operationId": "getGroupInfo",
         "parameters": [
           {
-            "name": "request",
-            "in": "query",
+            "name": "groupId",
+            "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/CursorPageBaseReq"
+              "type": "integer",
+              "format": "int64"
             }
           }
         ],
@@ -2932,7 +1906,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResultCursorPageBaseResponsePost"
+                  "$ref": "#/components/schemas/ApiResultGroup"
                 }
               }
             }
@@ -2980,15 +1954,15 @@
         }
       }
     },
-    "/capi/community/post/image": {
+    "/capi/group/role/list": {
       "get": {
         "tags": [
-          "community-controller"
+          "group-role-controller"
         ],
-        "operationId": "getImage",
+        "operationId": "groupRole",
         "parameters": [
           {
-            "name": "imageId",
+            "name": "roomId",
             "in": "query",
             "required": true,
             "schema": {
@@ -3003,7 +1977,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
+                  "$ref": "#/components/schemas/ApiResultListUserRole"
                 }
               }
             }
@@ -3051,15 +2025,15 @@
         }
       }
     },
-    "/capi/community/post/full": {
+    "/capi/group/member/list": {
       "get": {
         "tags": [
-          "community-controller"
+          "group-member-controller"
         ],
-        "operationId": "getPostFull",
+        "operationId": "getMemberList",
         "parameters": [
           {
-            "name": "postId",
+            "name": "roomId",
             "in": "query",
             "required": true,
             "schema": {
@@ -3074,7 +2048,67 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResultFullPostResponse"
+                  "$ref": "#/components/schemas/ApiResultListChatMemberResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultVoid"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capi/group/list": {
+      "get": {
+        "tags": [
+          "group-controller"
+        ],
+        "operationId": "getUserGroups",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResultListGroup"
                 }
               }
             }
@@ -3192,76 +2226,6 @@
           }
         }
       }
-    },
-    "/capi/user/friend": {
-      "delete": {
-        "tags": [
-          "friend-controller"
-        ],
-        "operationId": "delete",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FriendDeleteReq"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultVoid"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResultObject"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResult"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -3329,68 +2293,6 @@
           }
         }
       },
-      "FriendApproveReq": {
-        "required": [
-          "applyId",
-          "applyStatus"
-        ],
-        "type": "object",
-        "properties": {
-          "applyId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "applyStatus": {
-            "type": "string",
-            "enum": [
-              "WAIT_APPROVAL",
-              "AGREE",
-              "IGNORE"
-            ]
-          }
-        }
-      },
-      "AdminAddReq": {
-        "required": [
-          "roomId",
-          "uidList"
-        ],
-        "type": "object",
-        "properties": {
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "uidList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "ApiResultBoolean": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "type": "boolean"
-          }
-        }
-      },
       "UserRole": {
         "required": [
           "roleId",
@@ -3447,49 +2349,44 @@
           }
         }
       },
-      "Post": {
+      "AdminAddRequset": {
+        "required": [
+          "roomId",
+          "uidList"
+        ],
         "type": "object",
         "properties": {
-          "postId": {
+          "roomId": {
             "type": "integer",
             "format": "int64"
           },
-          "userId": {
-            "type": "integer",
-            "format": "int64"
+          "uidList": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "ApiResultBoolean": {
+        "required": [
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
           },
-          "title": {
+          "errCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errMsg": {
             "type": "string"
           },
-          "content": {
-            "type": "string"
-          },
-          "coverUrl": {
-            "type": "string"
-          },
-          "likeNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "commentNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "starNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "createTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updateTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
+          "data": {
+            "type": "boolean"
           }
         }
       },
@@ -3597,38 +2494,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/Message"
-          }
-        }
-      },
-      "ChatMessageMarkRequest": {
-        "required": [
-          "actType",
-          "avatarId",
-          "markType",
-          "messageId",
-          "roomId"
-        ],
-        "type": "object",
-        "properties": {
-          "messageId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "markType": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "actType": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "avatarId": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -3760,103 +2625,6 @@
           }
         }
       },
-      "FriendApplyReq": {
-        "required": [
-          "msg",
-          "targetUid"
-        ],
-        "type": "object",
-        "properties": {
-          "msg": {
-            "type": "string"
-          },
-          "targetUid": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "AddRoleRequest": {
-        "type": "object",
-        "properties": {
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "roleIdList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "MemberAddRequest": {
-        "required": [
-          "roomId",
-          "uidList"
-        ],
-        "type": "object",
-        "properties": {
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "uidList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "GroupAddRequest": {
-        "required": [
-          "uidList"
-        ],
-        "type": "object",
-        "properties": {
-          "uidList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "ApiResultIdRespVO": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/IdRespVO"
-          }
-        }
-      },
-      "IdRespVO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "RoleAbilityTable": {
         "type": "object",
         "properties": {
@@ -3872,7 +2640,7 @@
           }
         }
       },
-      "UploadUrlReq": {
+      "UploadUrlRequest": {
         "required": [
           "fileName",
           "scene"
@@ -3920,26 +2688,144 @@
           }
         }
       },
-      "AddPostRequest": {
+      "SubRoomRequest": {
+        "required": [
+          "parentRoomId",
+          "userIdList"
+        ],
         "type": "object",
         "properties": {
-          "userId": {
+          "parentRoomId": {
             "type": "integer",
             "format": "int64"
           },
-          "title": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string"
-          },
-          "coverUrl": {
-            "type": "string"
-          },
-          "imageUrls": {
+          "userIdList": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "ApiResultGroup": {
+        "required": [
+          "success"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "errCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errMsg": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Group"
+          }
+        }
+      },
+      "Group": {
+        "required": [
+          "avatar",
+          "backgroundImage",
+          "deleteStatus",
+          "description",
+          "name",
+          "parentGroupId",
+          "roomId"
+        ],
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "deleteStatus": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "parentGroupId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "backgroundImage": {
+            "type": "string"
+          }
+        }
+      },
+      "AddRoleRequest": {
+        "required": [
+          "roleIdList",
+          "roomId"
+        ],
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "roleIdList": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "MemberAddRequest": {
+        "required": [
+          "roomId",
+          "userIdList"
+        ],
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userIdList": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "GroupAddRequest": {
+        "required": [
+          "userIdList"
+        ],
+        "type": "object",
+        "properties": {
+          "userIdList": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
             }
           }
         }
@@ -3974,7 +2860,7 @@
           "content": {
             "type": "string"
           },
-          "replyMsgId": {
+          "replayMessageId": {
             "type": "integer",
             "format": "int64"
           },
@@ -4174,215 +3060,6 @@
           }
         }
       },
-      "CursorPageBaseReq": {
-        "type": "object",
-        "properties": {
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "ApiResultCursorPageBaseResponseFriendResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/CursorPageBaseResponseFriendResp"
-          }
-        }
-      },
-      "CursorPageBaseResponseFriendResp": {
-        "type": "object",
-        "properties": {
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "isLast": {
-            "type": "boolean"
-          },
-          "list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FriendResp"
-            }
-          }
-        }
-      },
-      "FriendResp": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "activeStatus": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "FriendCheckReq": {
-        "required": [
-          "uidList"
-        ],
-        "type": "object",
-        "properties": {
-          "uidList": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "ApiResultFriendCheckResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/FriendCheckResp"
-          }
-        }
-      },
-      "FriendCheck": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "isFriend": {
-            "type": "boolean"
-          }
-        }
-      },
-      "FriendCheckResp": {
-        "type": "object",
-        "properties": {
-          "checkedList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FriendCheck"
-            }
-          }
-        }
-      },
-      "ApiResultFriendUnreadResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/FriendUnreadResp"
-          }
-        }
-      },
-      "FriendUnreadResp": {
-        "type": "object",
-        "properties": {
-          "unReadCount": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "ApiResultCursorPageBaseResponseFriendApplyResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/CursorPageBaseResponseFriendApplyResp"
-          }
-        }
-      },
-      "CursorPageBaseResponseFriendApplyResp": {
-        "type": "object",
-        "properties": {
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "isLast": {
-            "type": "boolean"
-          },
-          "list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FriendApplyResp"
-            }
-          }
-        }
-      },
-      "FriendApplyResp": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "msg": {
-            "type": "string"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApiResultListUserRole": {
         "required": [
           "success"
@@ -4404,172 +3081,6 @@
             "items": {
               "$ref": "#/components/schemas/UserRole"
             }
-          }
-        }
-      },
-      "ApiResultListChatMemberResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ChatMemberResp"
-            }
-          }
-        }
-      },
-      "ChatMemberResp": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "roleId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "memberType": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "ApiResultListRoomGroup": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RoomGroup"
-            }
-          }
-        }
-      },
-      "RoomGroup": {
-        "required": [
-          "avatar",
-          "backgroundImage",
-          "deleteStatus",
-          "description",
-          "name",
-          "parentGroupId",
-          "roomId"
-        ],
-        "type": "object",
-        "properties": {
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "deleteStatus": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "createTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updateTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "parentGroupId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "backgroundImage": {
-            "type": "string"
-          }
-        }
-      },
-      "ApiResultRoomResp": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/RoomResp"
-          }
-        }
-      },
-      "RoomResp": {
-        "type": "object",
-        "properties": {
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "groupName": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "groupType": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "backgroundImage": {
-            "type": "string"
-          }
-        }
-      },
-      "ChangeBackgroundReq": {
-        "type": "object",
-        "properties": {
-          "backgroundUrl": {
-            "type": "string"
-          },
-          "roomId": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -4618,7 +3129,7 @@
           }
         }
       },
-      "ApiResultPost": {
+      "ApiResultListChatMemberResp": {
         "required": [
           "success"
         ],
@@ -4635,50 +3146,27 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/Post"
-          }
-        }
-      },
-      "ApiResultCursorPageBaseResponsePost": {
-        "required": [
-          "success"
-        ],
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "errCode": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errMsg": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/CursorPageBaseResponsePost"
-          }
-        }
-      },
-      "CursorPageBaseResponsePost": {
-        "type": "object",
-        "properties": {
-          "cursor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "isLast": {
-            "type": "boolean"
-          },
-          "list": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Post"
+              "$ref": "#/components/schemas/ChatMemberResp"
             }
           }
         }
       },
-      "ApiResultFullPostResponse": {
+      "ChatMemberResp": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "memberType": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ApiResultListGroup": {
         "required": [
           "success"
         ],
@@ -4695,45 +3183,10 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/FullPostResponse"
-          }
-        }
-      },
-      "FullPostResponse": {
-        "type": "object",
-        "properties": {
-          "post": {
-            "$ref": "#/components/schemas/Post"
-          },
-          "postImageUrls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PostImage"
+              "$ref": "#/components/schemas/Group"
             }
-          }
-        }
-      },
-      "PostImage": {
-        "type": "object",
-        "properties": {
-          "postImageId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "postId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "imageUrl": {
-            "type": "string"
-          },
-          "createTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updateTime": {
-            "type": "string",
-            "format": "date-time"
           }
         }
       },
@@ -4761,19 +3214,27 @@
           }
         }
       },
-      "FriendDeleteReq": {
+      "DeleteRoleRequest": {
         "required": [
-          "targetUid"
+          "roleIdList",
+          "roomId"
         ],
         "type": "object",
         "properties": {
-          "targetUid": {
+          "roomId": {
             "type": "integer",
             "format": "int64"
+          },
+          "roleIdList": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         }
       },
-      "AdminRevokeReq": {
+      "AdminRevokeRequest": {
         "required": [
           "roomId",
           "uidList"
@@ -4793,10 +3254,10 @@
           }
         }
       },
-      "MemberDelRequest": {
+      "MemberDeleteRequest": {
         "required": [
           "roomId",
-          "userID"
+          "userIdList"
         ],
         "type": "object",
         "properties": {
@@ -4804,7 +3265,7 @@
             "type": "integer",
             "format": "int64"
           },
-          "userID": {
+          "userIdList": {
             "type": "array",
             "items": {
               "type": "integer",

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { tuanchat } from '@/api/instance'
 import { wsService } from '@/services/websocket'
 import { useAvatarStore } from '@/stores/avatar'
-import type { ChatMessageRequest, ChatMessageResponse, Message } from '@/api/models'
+import type { ChatMessageRequest, ChatMessageResponse, Message } from '@/api'
 
 export const useChatStore = defineStore('chat', () => {
   // 初始化聊天室
@@ -29,9 +29,9 @@ export const useChatStore = defineStore('chat', () => {
       const currentCursor = cursor || roomCursors.value.get(roomId)
       
       const response = await chatControllerApi.getMsgPage({
-        roomId,
+        roomId: roomId,
         cursor: currentCursor,
-        pageSize: 20
+        pageSize: 20,
       })
       
       if (response.data?.list) {

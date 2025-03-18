@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type FriendResp = {
-    uid?: number;
-    activeStatus?: number;
+export type MemberDeleteRequest = {
+    roomId: number;
+    userIdList: Array<number>;
 };
 

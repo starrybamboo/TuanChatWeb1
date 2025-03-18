@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useRoleStore } from '@/stores/role'
 import { useAvatarStore } from '@/stores/avatar'
+import { executeDiceCommand } from '@/services/diceService'
 
 const chatStore = useChatStore()
 const roleStore = useRoleStore()
@@ -21,14 +22,39 @@ onMounted(async () => {
 async function sendMessage() {
   if (!newMessage.value.trim() || !chatStore.currentRoomId || !roleStore.currentRole) return
 
-  await chatStore.sendMessage({
-    roomId: chatStore.currentRoomId,
-    content: newMessage.value,
-    messageType: 1, // 文本消息
-    roleId: roleStore.currentRole.roleId,
-    avatarId: roleStore.currentRole.avatarId || 0n,
-    body: {}
-  })
+  const message = newMessage.value.trim()
+  // 检查是否是骰子命令
+  if (message.startsWith('。') || message.startsWith('.')) {
+    try {
+      const result = executeDiceCommand(message)
+      await chatStore.sendMessage({
+        roomId: chatStore.currentRoomId,
+        content: result.result,
+        messageType: 1,
+        roleId: roleStore.currentRole.roleId,
+        avatarId: roleStore.currentRole.avatarId || 0,
+        body: { diceCommand: message, diceResult: result }
+      })
+    } catch (error) {
+      await chatStore.sendMessage({
+        roomId: chatStore.currentRoomId,
+        content: error instanceof Error ? error.message : '命令执行失败',
+        messageType: 1, 
+        roleId: roleStore.currentRole.roleId,
+        avatarId: roleStore.currentRole.avatarId || 0,
+        body: { diceCommand: message, error: true }
+      })
+    }
+  } else {
+    await chatStore.sendMessage({
+      roomId: chatStore.currentRoomId,
+      content: message,
+      messageType: 1, // 文本消息
+      roleId: roleStore.currentRole.roleId,
+      avatarId: roleStore.currentRole.avatarId || 0,
+      body: {}
+    })
+  }
 
   newMessage.value = ''
 }
@@ -38,7 +64,7 @@ async function sendMessage() {
   <div class="message-input-container">
     <div class="role-info">
       <div class="role-avatar" @click="$emit('show-avatar-selector')">
-        <img v-if="roleStore.currentRole?.avatarId" :src="avatarStore.getAvatarUrl(roleStore.currentRole.avatarId)"
+        <img v-if="roleStore.currentRole?.avatarId" :src="avatarStore.getAvatarUrl(Number(roleStore.currentRole.avatarId))"
           alt="角色头像" />
         <div v-else class="avatar-placeholder">选择头像</div>
       </div>

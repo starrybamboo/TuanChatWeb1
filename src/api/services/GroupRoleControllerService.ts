@@ -2,28 +2,25 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ApiResultCursorPageBaseResponseChatMessageResponse } from '../models/ApiResultCursorPageBaseResponseChatMessageResponse';
-import type { ApiResultListChatMessageResponse } from '../models/ApiResultListChatMessageResponse';
-import type { ApiResultMessage } from '../models/ApiResultMessage';
+import type { AddRoleRequest } from '../models/AddRoleRequest';
+import type { ApiResultListUserRole } from '../models/ApiResultListUserRole';
 import type { ApiResultVoid } from '../models/ApiResultVoid';
-import type { ChatMessagePageRequest } from '../models/ChatMessagePageRequest';
-import type { ChatMessageRequest } from '../models/ChatMessageRequest';
-import type { Message } from '../models/Message';
+import type { DeleteRoleRequest } from '../models/DeleteRoleRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-export class ChatControllerService {
+export class GroupRoleControllerService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
      * @param requestBody
-     * @returns ApiResultMessage OK
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public updateMessage(
-        requestBody: Message,
-    ): CancelablePromise<ApiResultMessage> {
+    public addRole(
+        requestBody: AddRoleRequest,
+    ): CancelablePromise<ApiResultVoid> {
         return this.httpRequest.request({
-            method: 'PUT',
-            url: '/capi/chat/message',
+            method: 'POST',
+            url: '/capi/group/role/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -39,33 +36,12 @@ export class ChatControllerService {
      * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public sendMessage(
-        requestBody: ChatMessageRequest,
+    public deleteRole1(
+        requestBody: DeleteRoleRequest,
     ): CancelablePromise<ApiResultVoid> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/capi/chat/message',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request`,
-                405: `Method Not Allowed`,
-                429: `Too Many Requests`,
-                500: `Internal Server Error`,
-            },
-        });
-    }
-    /**
-     * @param requestBody
-     * @returns ApiResultCursorPageBaseResponseChatMessageResponse OK
-     * @throws ApiError
-     */
-    public getMsgPage(
-        requestBody: ChatMessagePageRequest,
-    ): CancelablePromise<ApiResultCursorPageBaseResponseChatMessageResponse> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/capi/chat/message/page',
+            method: 'DELETE',
+            url: '/capi/group/role/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -78,15 +54,15 @@ export class ChatControllerService {
     }
     /**
      * @param roomId
-     * @returns ApiResultListChatMessageResponse OK
+     * @returns ApiResultListUserRole OK
      * @throws ApiError
      */
-    public getAllMessage(
+    public groupRole(
         roomId: number,
-    ): CancelablePromise<ApiResultListChatMessageResponse> {
+    ): CancelablePromise<ApiResultListUserRole> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/capi/chat/message/all',
+            url: '/capi/group/role/list',
             query: {
                 'roomId': roomId,
             },

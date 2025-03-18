@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UploadUrlReq = {
-    fileName: string;
-    scene: number;
+export type AdminAddRequset = {
+    roomId: number;
+    uidList: Array<number>;
 };
 

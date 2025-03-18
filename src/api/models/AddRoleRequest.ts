@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AddRoleRequest = {
-    roomId?: number;
-    roleIdList?: Array<number>;
+    roomId: number;
+    roleIdList: Array<number>;
 };
 

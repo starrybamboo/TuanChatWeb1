@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CursorPageBaseReq = {
-    pageSize?: number;
-    cursor?: number;
+export type AdminRevokeRequest = {
+    roomId: number;
+    uidList: Array<number>;
 };
 

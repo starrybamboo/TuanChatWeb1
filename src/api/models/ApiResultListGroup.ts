@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { FullPostResponse } from './FullPostResponse';
-export type ApiResultFullPostResponse = {
+import type { Group } from './Group';
+export type ApiResultListGroup = {
     success: boolean;
     errCode?: number;
     errMsg?: string;
-    data?: FullPostResponse;
+    data?: Array<Group>;
 };
 

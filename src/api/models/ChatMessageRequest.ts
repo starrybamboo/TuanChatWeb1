@@ -8,7 +8,7 @@ export type ChatMessageRequest = {
     roleId: number;
     avatarId: number;
     content: string;
-    replyMsgId?: number;
+    replayMessageId?: number;
     body: Record<string, any>;
 };
 

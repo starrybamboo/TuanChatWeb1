@@ -2,28 +2,25 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ApiResultCursorPageBaseResponseChatMessageResponse } from '../models/ApiResultCursorPageBaseResponseChatMessageResponse';
-import type { ApiResultListChatMessageResponse } from '../models/ApiResultListChatMessageResponse';
-import type { ApiResultMessage } from '../models/ApiResultMessage';
-import type { ApiResultVoid } from '../models/ApiResultVoid';
-import type { ChatMessagePageRequest } from '../models/ChatMessagePageRequest';
-import type { ChatMessageRequest } from '../models/ChatMessageRequest';
-import type { Message } from '../models/Message';
+import type { ApiResultGroup } from '../models/ApiResultGroup';
+import type { ApiResultListGroup } from '../models/ApiResultListGroup';
+import type { GroupAddRequest } from '../models/GroupAddRequest';
+import type { SubRoomRequest } from '../models/SubRoomRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-export class ChatControllerService {
+export class GroupControllerService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
      * @param requestBody
-     * @returns ApiResultMessage OK
+     * @returns ApiResultGroup OK
      * @throws ApiError
      */
-    public updateMessage(
-        requestBody: Message,
-    ): CancelablePromise<ApiResultMessage> {
+    public createSubgroup(
+        requestBody: SubRoomRequest,
+    ): CancelablePromise<ApiResultGroup> {
         return this.httpRequest.request({
-            method: 'PUT',
-            url: '/capi/chat/message',
+            method: 'POST',
+            url: '/capi/group/subgroup',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -36,15 +33,15 @@ export class ChatControllerService {
     }
     /**
      * @param requestBody
-     * @returns ApiResultVoid OK
+     * @returns ApiResultGroup OK
      * @throws ApiError
      */
-    public sendMessage(
-        requestBody: ChatMessageRequest,
-    ): CancelablePromise<ApiResultVoid> {
+    public createGroup(
+        requestBody: GroupAddRequest,
+    ): CancelablePromise<ApiResultGroup> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/capi/chat/message',
+            url: '/capi/group/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -56,40 +53,35 @@ export class ChatControllerService {
         });
     }
     /**
-     * @param requestBody
-     * @returns ApiResultCursorPageBaseResponseChatMessageResponse OK
+     * @param groupId
+     * @returns ApiResultGroup OK
      * @throws ApiError
      */
-    public getMsgPage(
-        requestBody: ChatMessagePageRequest,
-    ): CancelablePromise<ApiResultCursorPageBaseResponseChatMessageResponse> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/capi/chat/message/page',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request`,
-                405: `Method Not Allowed`,
-                429: `Too Many Requests`,
-                500: `Internal Server Error`,
-            },
-        });
-    }
-    /**
-     * @param roomId
-     * @returns ApiResultListChatMessageResponse OK
-     * @throws ApiError
-     */
-    public getAllMessage(
-        roomId: number,
-    ): CancelablePromise<ApiResultListChatMessageResponse> {
+    public getGroupInfo(
+        groupId: number,
+    ): CancelablePromise<ApiResultGroup> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/capi/chat/message/all',
-            query: {
-                'roomId': roomId,
+            url: '/capi/group/{groupId}',
+            path: {
+                'groupId': groupId,
             },
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
+    /**
+     * @returns ApiResultListGroup OK
+     * @throws ApiError
+     */
+    public getUserGroups(): CancelablePromise<ApiResultListGroup> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/capi/group/list',
             errors: {
                 400: `Bad Request`,
                 405: `Method Not Allowed`,

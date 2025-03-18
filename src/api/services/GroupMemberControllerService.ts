@@ -2,28 +2,49 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ApiResultCursorPageBaseResponseChatMessageResponse } from '../models/ApiResultCursorPageBaseResponseChatMessageResponse';
-import type { ApiResultListChatMessageResponse } from '../models/ApiResultListChatMessageResponse';
-import type { ApiResultMessage } from '../models/ApiResultMessage';
+import type { AdminAddRequset } from '../models/AdminAddRequset';
+import type { AdminRevokeRequest } from '../models/AdminRevokeRequest';
+import type { ApiResultBoolean } from '../models/ApiResultBoolean';
+import type { ApiResultListChatMemberResp } from '../models/ApiResultListChatMemberResp';
 import type { ApiResultVoid } from '../models/ApiResultVoid';
-import type { ChatMessagePageRequest } from '../models/ChatMessagePageRequest';
-import type { ChatMessageRequest } from '../models/ChatMessageRequest';
-import type { Message } from '../models/Message';
+import type { MemberAddRequest } from '../models/MemberAddRequest';
+import type { MemberDeleteRequest } from '../models/MemberDeleteRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-export class ChatControllerService {
+export class GroupMemberControllerService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
      * @param requestBody
-     * @returns ApiResultMessage OK
+     * @returns ApiResultBoolean OK
      * @throws ApiError
      */
-    public updateMessage(
-        requestBody: Message,
-    ): CancelablePromise<ApiResultMessage> {
+    public setPlayer(
+        requestBody: AdminAddRequset,
+    ): CancelablePromise<ApiResultBoolean> {
         return this.httpRequest.request({
             method: 'PUT',
-            url: '/capi/chat/message',
+            url: '/capi/group/member/player',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                405: `Method Not Allowed`,
+                429: `Too Many Requests`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
+    /**
+     * @param requestBody
+     * @returns ApiResultBoolean OK
+     * @throws ApiError
+     */
+    public revokePlayer(
+        requestBody: AdminRevokeRequest,
+    ): CancelablePromise<ApiResultBoolean> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/capi/group/member/player',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -39,12 +60,12 @@ export class ChatControllerService {
      * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public sendMessage(
-        requestBody: ChatMessageRequest,
+    public addMember(
+        requestBody: MemberAddRequest,
     ): CancelablePromise<ApiResultVoid> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/capi/chat/message',
+            url: '/capi/group/member/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -57,15 +78,15 @@ export class ChatControllerService {
     }
     /**
      * @param requestBody
-     * @returns ApiResultCursorPageBaseResponseChatMessageResponse OK
+     * @returns ApiResultVoid OK
      * @throws ApiError
      */
-    public getMsgPage(
-        requestBody: ChatMessagePageRequest,
-    ): CancelablePromise<ApiResultCursorPageBaseResponseChatMessageResponse> {
+    public deleteMember(
+        requestBody: MemberDeleteRequest,
+    ): CancelablePromise<ApiResultVoid> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/capi/chat/message/page',
+            method: 'DELETE',
+            url: '/capi/group/member/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -78,15 +99,15 @@ export class ChatControllerService {
     }
     /**
      * @param roomId
-     * @returns ApiResultListChatMessageResponse OK
+     * @returns ApiResultListChatMemberResp OK
      * @throws ApiError
      */
-    public getAllMessage(
+    public getMemberList(
         roomId: number,
-    ): CancelablePromise<ApiResultListChatMessageResponse> {
+    ): CancelablePromise<ApiResultListChatMemberResp> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/capi/chat/message/all',
+            url: '/capi/group/member/list',
             query: {
                 'roomId': roomId,
             },

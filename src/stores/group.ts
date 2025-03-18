@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { tuanchat } from '@/api/instance'
 import type { UserInfoResponse } from '@/api/models/UserInfoResponse'
+import type { UserRole } from '@/api/models/UserRole'
+import {useRoleStore} from "@/stores/role.ts";
 
 export interface GroupMember {
   uid?: number
@@ -22,11 +24,13 @@ export const useGroupStore = defineStore('group', () => {
   // 状态
   const currentGroupId = ref<number | null>(null)
   const members = ref<Map<number, GroupMember[]>>(new Map())
-  const roleMap = ref<Map<number, any>>(new Map())
+  const roleMap = ref<Map<number, UserRole[]>>(new Map())
   const userInfoMap = ref<Map<number, UserInfoResponse>>(new Map())
   const currentGroup = ref<RoomGroup | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  const roleStore = useRoleStore();
 
   // 获取群组成员列表
   const fetchMembers = async (groupId: number) => {
@@ -35,19 +39,13 @@ export const useGroupStore = defineStore('group', () => {
     loading.value = true
     error.value = null
     try {
-      const [memberResponse, roleResponse] = await Promise.all([
-        tuanchat.roomGroupController.getMemberList(groupId),
-        tuanchat.roomGroupController.groupRole(groupId)
-      ])
+      const memberResponse = await tuanchat.groupMemberController.getMemberList(groupId)
       
-      if (memberResponse.success && roleResponse.success && memberResponse.data && roleResponse.data) {
-        // 更新角色映射
-        roleMap.value = new Map(roleResponse.data.map(role => [role.roleId, role]))
+      if (memberResponse.success && memberResponse.data) {
         
         // 更新成员列表
         const membersList = memberResponse.data.map(member => ({
           uid: member.uid,
-          roleId: member.roleId,
           memberType: member.memberType
         }))
         members.value.set(groupId, membersList)
@@ -69,11 +67,39 @@ export const useGroupStore = defineStore('group', () => {
         
         await Promise.all(userPromises)
       } else {
-        error.value = memberResponse.errMsg || roleResponse.errMsg || '获取群组数据失败'
+        error.value = memberResponse.errMsg || '获取群组数据失败'
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : '获取群组成员列表失败'
       console.error('获取群组成员列表失败:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 获取群组角色列表
+  const fetchGroupRoles = async (roomId: number) => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await tuanchat.groupRoleController.groupRole(roomId)
+      console.log("群聊获取到的角色列表", response.data)
+
+      if (response.success && response.data) {
+        // 使用Map缓存群组角色，并只添加不存在的角色
+        response.data.forEach(newRole => {
+          if (!roleStore.roles.some(existingRole => existingRole.roleId === newRole.roleId)) {
+            roleStore.roles.push(newRole)
+          }
+        })
+        // 更新群组角色映射
+        roleMap.value.set(roomId, response.data)
+      } else {
+        error.value = response.errMsg || '获取群组角色列表失败'
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '未知错误'
+      console.error('获取群组角色列表失败:', err)
     } finally {
       loading.value = false
     }
@@ -86,7 +112,7 @@ export const useGroupStore = defineStore('group', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await tuanchat.roomGroupController.groupDetail(groupId)
+      const response = await tuanchat.groupController.getGroupInfo(groupId)
       if (response.success && response.data) {
         currentGroup.value = response.data
       } else {
@@ -121,6 +147,52 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
+  // 添加成员
+  const addMember = async (params: { roomId: number, uid: number, roleId: number, memberType: number }) => {
+    const memberAddRequest = {
+      roomId: params.roomId,
+      userIdList: [params.uid]
+    }
+    loading.value = true
+    error.value = null
+    try {
+      const response = await tuanchat.groupMemberController.addMember(memberAddRequest)
+      if (!response.success) {
+        error.value = response.errMsg || '添加成员失败'
+        throw new Error(error.value)
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '添加成员失败'
+      console.error('添加成员失败:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 删除成员
+  const deleteMember = async (params: { roomId: number, uid: number }) => {
+    loading.value = true
+    error.value = null
+    try {
+      const memberDelRequest = {
+        roomId: params.roomId,
+        userIdList: [params.uid]
+      }
+      const response = await tuanchat.groupMemberController.deleteMember(memberDelRequest)
+      if (!response.success) {
+        error.value = response.errMsg || '删除成员失败'
+        throw new Error(error.value)
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '删除成员失败'
+      console.error('删除成员失败:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     // 状态
     currentGroupId,
@@ -133,7 +205,10 @@ export const useGroupStore = defineStore('group', () => {
     // 方法
     fetchMembers,
     fetchGroupInfo,
+    fetchGroupRoles,
     setCurrentGroupId,
-    getMemberTypeText
+    getMemberTypeText,
+    addMember,
+    deleteMember
   }
 })

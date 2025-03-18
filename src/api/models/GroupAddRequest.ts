@@ -3,6 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GroupAddRequest = {
-    uidList: Array<number>;
+    userIdList: Array<number>;
 };
 

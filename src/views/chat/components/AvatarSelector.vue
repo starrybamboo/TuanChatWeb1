@@ -29,7 +29,11 @@ const loadAvatars = async () => {
   loading.value = true;
   try {
     await avatarStore.fetchRoleAvatars(props.roleId);
-    avatars.value = avatarStore.getRoleAvatars(props.roleId) || [];
+    const roleAvatars = avatarStore.getRoleAvatars(props.roleId) || [];
+    avatars.value = roleAvatars.map(avatar => ({
+      ...avatar,
+      avatarId: avatar.avatarId || 0
+    }));
   } catch (error) {
     ElMessage.error('加载头像失败');
   } finally {
@@ -71,12 +75,12 @@ watch(() => props.show, async (newVal) => {
           v-for="avatar in avatars"
           :key="String(avatar.avatarId)"
           class="avatar-item"
-          @click="handleSelectAvatar(avatar.avatarId!)"
+          @click="handleSelectAvatar(Number(avatar.avatarId))"
         >
           <div class="avatar-wrapper">
             <el-avatar
               :size="100"
-              :src="avatarStore.getAvatarUrl(avatar.avatarId!)"
+              :src="avatarStore.getAvatarUrl(Number(avatar.avatarId))"
               fit="cover"
               shape="square"
             />

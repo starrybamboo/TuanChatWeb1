@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type FriendApplyResp = {
-    uid?: number;
-    msg?: string;
-    status?: number;
+export type SubRoomRequest = {
+    parentRoomId: number;
+    userIdList: Array<number>;
 };
 
