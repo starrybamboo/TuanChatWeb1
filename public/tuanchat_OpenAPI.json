@@ -2048,7 +2048,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResultListChatMemberResp"
+                  "$ref": "#/components/schemas/ApiResultListGroupMember"
                 }
               }
             }
@@ -3129,7 +3129,7 @@
           }
         }
       },
-      "ApiResultListChatMemberResp": {
+      "ApiResultListGroupMember": {
         "required": [
           "success"
         ],
@@ -3148,21 +3148,33 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ChatMemberResp"
+              "$ref": "#/components/schemas/GroupMember"
             }
           }
         }
       },
-      "ChatMemberResp": {
+      "GroupMember": {
         "type": "object",
         "properties": {
-          "uid": {
+          "roomId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userId": {
             "type": "integer",
             "format": "int64"
           },
           "memberType": {
             "type": "integer",
             "format": "int32"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

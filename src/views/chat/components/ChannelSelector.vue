@@ -77,7 +77,7 @@ const activeChannelId = ref(1);
 
 // 切换二级群组
 const props = defineProps<{
-  chatContentRef: InstanceType<typeof ChatContent>
+  chatContentRef?: InstanceType<typeof ChatContent>
 }>();
 
 const switchSubGroup = (subGroupId: number) => {

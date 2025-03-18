@@ -3,14 +3,27 @@ import type { UserRole } from '@/api/models/UserRole';
 import { tuanchat } from '@/api/instance';
 import { useUserStore } from '@/stores/user';
 
+/**
+ * 角色管理Store
+ * 负责管理用户角色的状态、获取、创建、更新和删除等操作
+ * 维护角色列表和当前选中角色
+ */
 export const useRoleStore = defineStore('role', {
   state: () => ({
+    /** 用户的所有角色列表 */
     roles: [] as UserRole[],
+    /** 当前选中的角色 */
     currentRole: null as UserRole | null,
+    /** 加载状态标识 */
     loading: false,
+    /** 错误信息 */
     error: null as string | null
   }),
   actions: {
+    /**
+     * 获取用户的所有角色
+     * 需要用户已登录
+     */
     async fetchRoles() {
       this.loading = true;
       this.error = null;
@@ -37,6 +50,11 @@ export const useRoleStore = defineStore('role', {
         this.loading = false;
       }
     },
+    /**
+     * 根据ID获取角色详情
+     * @param id 角色ID
+     * @returns 角色详情
+     */
     async fetchRoleById(id: number) {
       this.loading = true;
       this.error = null;
@@ -56,6 +74,10 @@ export const useRoleStore = defineStore('role', {
         this.loading = false;
       }
     },
+    /**
+     * 创建新角色
+     * @returns 新创建的角色信息
+     */
     async createRole() {
       this.loading = true;
       this.error = null;
@@ -75,6 +97,12 @@ export const useRoleStore = defineStore('role', {
         this.loading = false;
       }
     },
+    /**
+     * 更新角色信息
+     * @param id 角色ID
+     * @param roleData 角色更新数据
+     * @returns 更新后的角色信息
+     */
     async updateRole(id: number, roleData: UserRole) {
       this.loading = true;
       this.error = null;
@@ -100,6 +128,11 @@ export const useRoleStore = defineStore('role', {
         this.loading = false;
       }
     },
+    /**
+     * 删除角色
+     * @param id 角色ID
+     * @returns 是否删除成功
+     */
     async deleteRole(id: number) {
       this.loading = true;
       this.error = null;
@@ -122,6 +155,11 @@ export const useRoleStore = defineStore('role', {
         this.loading = false;
       }
     },
+    /**
+     * 根据ID获取角色名称
+     * @param id 角色ID
+     * @returns 角色名称，如果未找到则返回默认名称
+     */
     getRoleNameById(id: number) {
       // 从缓存的roles中查找
       const cachedRole = this.roles.find(role => role.roleId === id);

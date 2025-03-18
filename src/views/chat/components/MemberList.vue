@@ -28,17 +28,39 @@ const getRoleAvatarUrl = async (avatarId: number) => {
 
 // 初始化角色头像URL
 const initRoleAvatarUrls = async () => {
-  const roles = groupStore.roleMap.get(groupStore.currentGroupId || 0) || [];
-  console.log("加载中的role", roles)
-  for (const role of roles) {
-    if (role.roleId) {
-      // 获取角色的可用头像列表
-      await avatarStore.fetchRoleAvatars(Number(role.roleId));
-      // 如果角色有设置头像，则获取头像URL
-      if (role.avatarId) {
-        await getRoleAvatarUrl(Number(role.avatarId));
+  try {
+    console.log("开始初始化角色头像URL");
+    console.log("当前群组ID:", groupStore.currentGroupId);
+    console.log("当前roleMap的所有key:", Array.from(groupStore.roleMap.keys()));
+    console.log("当前roleMap的完整状态:", Array.from(groupStore.roleMap.entries()));
+
+    const roles = groupStore.roleMap.get(groupStore.currentGroupId || 0);
+    console.log("获取到的角色列表:", roles);
+
+    if (!roles || roles.length === 0) {
+      console.warn("当前群组没有找到角色数据");
+      return;
+    }
+    
+    for (const role of roles) {
+      if (role.roleId) {
+        console.log("正在处理角色:", { roleName: role.roleName, roleId: role.roleId, avatarId: role.avatarId});
+
+        // 获取角色的可用头像列表
+        await avatarStore.fetchRoleAvatars(Number(role.roleId));
+        console.log(`角色 ${role.roleName} 的可用头像列表已加载`);
+
+        // 如果角色有设置头像，则获取头像URL
+        if (role.avatarId) {
+          const avatarUrl = await getRoleAvatarUrl(Number(role.avatarId));
+          console.log(`角色 ${role.roleName} 的头像URL:`, avatarUrl, `当前roleAvatarUrls状态:`, Array.from(roleAvatarUrls.entries()));
+        } else {
+          console.log(`角色 ${role.roleName} 未设置头像`);
+        }
       }
     }
+  } catch (error) {
+    console.error("初始化角色头像失败:", error);
   }
 };
 
@@ -62,7 +84,7 @@ const addMember = async () => {
         roomId: groupStore.currentGroupId,
         uid: Number(uid.value),
         roleId: 0, // 默认角色ID
-        memberType: 2 // 默认为玩家
+        memberType: 3 // 默认为观战
       });
       ElMessage.success('成员添加成功');
       // 刷新成员列表
@@ -129,23 +151,22 @@ onMounted(async () => {
         <div class="member-list">
           <div 
             v-for="member in groupStore.members.get(groupStore.currentGroupId || 0) || []" 
-            :key="String(member.uid)" 
+            :key="String(member.userId)" 
             class="member-item"
           >
             <div class="member-avatar">
               <img 
-                v-if="member.uid && groupStore.userInfoMap.get(Number(member.uid))?.avatar" 
-                :src="groupStore.userInfoMap.get(Number(member.uid))?.avatar" 
-                :alt="groupStore.userInfoMap.get(Number(member.uid))?.username"
+                v-if="member.userId && groupStore.userInfoMap.get(member.userId)?.avatar" 
+                :src="groupStore.userInfoMap.get(member.userId)?.avatar" 
+                :alt="groupStore.userInfoMap.get(member.userId)?.username"
                 class="avatar-image"
               />
-              <span v-else>👤</span>
             </div>
             <div class="member-info">
-              <div class="member-name">{{ member.uid && groupStore.userInfoMap.get(Number(member.uid))?.username || `UID: ${member.uid}` }}</div>
-              <div class="member-tag">角色ID: {{ member.roleId }} | {{ useGroupStore().getMemberTypeText(member.memberType || -1) }}</div>
+              <div class="member-name">{{ member.userId && groupStore.userInfoMap.get(member.userId)?.username || `UID: ${member.userId}` }}</div>
+              <div class="member-tag"> {{ useGroupStore().getMemberTypeText(member.memberType || -1) }}</div>
             </div>
-            <el-button type="danger" size="small" @click="deleteMember(Number(member.uid))" class="delete-btn">删除</el-button>
+            <el-button type="danger" size="small" @click="deleteMember(Number(member.userId))" class="delete-btn">删除</el-button>
           </div>
         </div>
       </div>
@@ -157,7 +178,7 @@ onMounted(async () => {
       <div class="members-groups">
         <div class="member-list">
           <div 
-            v-for="role in groupStore.roleMap.get(groupStore.currentGroupId || 0)" 
+            v-for="role in groupStore.roleMap.get(groupStore.currentGroupId || 0) || []" 
             :key="String(role.roleId)" 
             class="member-item"
           >
@@ -292,17 +313,3 @@ onMounted(async () => {
   margin-top: 2px;
 }
 </style>
-
-// 获取成员类型文字说明
-const getMemberTypeText = (type: number): string => {
-  switch (type) {
-    case 1:
-      return '主持人';
-    case 2:
-      return '玩家';
-    case 3:
-      return '观战';
-    default:
-      return `类型: ${type}`;
-  }
-};

@@ -6,42 +6,72 @@ import { tuanchat } from '@/api/instance';
 
 export const useAvatarStore = defineStore('avatar', {
   state: () => ({
+    /** 角色的所有头像列表 */
     avatars: [] as RoleAvatar[],
+    /** 当前选中的头像 */
     currentAvatar: null as RoleAvatar | null,
-    avatarMap: new Map<number, string>(), // avatarId 到 avatarUrl 的映射
-    spriteUrlMap: new Map<number, string>(), // avatarId 到 spriteUrl 的映射
-    avatarTitleMap: new Map<number, string>(), // avatarId 到 avatarTitle 的映射
+    /** avatarId到avatarUrl的映射，用于快速获取头像URL */
+    avatarMap: new Map<number, string>(),
+    /** avatarId到spriteUrl的映射，用于快速获取精灵图URL */
+    spriteUrlMap: new Map<number, string>(),
+    /** avatarId到avatarTitle的映射，用于快速获取头像标题 */
+    avatarTitleMap: new Map<number, string>(),
+    /** 加载状态标识 */
     loading: false,
+    /** 错误信息 */
     error: null as string | null
   }),
   getters: {
-    // 获取指定角色的所有头像
+    /**
+     * 获取指定角色的所有头像
+     * @param roleId 角色ID
+     * @returns 角色的头像列表
+     */
     getRoleAvatars: (state) => (roleId: number | undefined) => {
       if (!roleId) return [];
       return state.avatars.filter(avatar => avatar.roleId === roleId);
     },
-    // 根据头像ID获取头像URL
+    /**
+     * 根据头像ID获取头像URL
+     * @param avatarId 头像ID
+     * @returns 头像URL
+     */
     getAvatarUrl: (state) => (avatarId: number | undefined) => {
       if (!avatarId) return '';
       return state.avatarMap.get(avatarId) || '';
     },
-    // 根据头像ID获取精灵图URL
+    /**
+     * 根据头像ID获取精灵图URL
+     * @param avatarId 头像ID
+     * @returns 精灵图URL
+     */
     getSpriteUrl: (state) => (avatarId: number | undefined) => {
       if (!avatarId) return '';
       return state.spriteUrlMap.get(avatarId) || '';
     },
-    // 根据头像ID获取头像标题
+    /**
+     * 根据头像ID获取头像标题
+     * @param avatarId 头像ID
+     * @returns 头像标题
+     */
     getAvatarTitle: (state) => (avatarId: number | undefined) => {
       if (!avatarId) return '';
       return state.avatarTitleMap.get(avatarId) || '';
     },
-    // 获取所有头像列表
+    /**
+     * 获取所有头像列表
+     * @returns 所有头像列表
+     */
     getAllAvatars: (state) => {
       return state.avatars;
     }
   },
   actions: {    
-    // 获取角色的所有头像
+    /**
+     * 获取角色的所有头像
+     * @param roleId 角色ID
+     * @returns 角色的头像列表
+     */
     async fetchRoleAvatars(roleId: number) {
       this.loading = true;
       this.error = null;
@@ -63,7 +93,11 @@ export const useAvatarStore = defineStore('avatar', {
         this.loading = false;
       }
     },
-    // 根据ID获取头像详情
+    /**
+     * 根据ID获取头像详情
+     * @param avatarId 头像ID
+     * @returns 头像详情
+     */
     async fetchAvatarById(avatarId: number) {
       this.loading = true;
       this.error = null;
@@ -95,7 +129,11 @@ export const useAvatarStore = defineStore('avatar', {
         this.loading = false;
       }
     },
-    // 创建新头像
+    /**
+     * 创建新头像
+     * @param roleId 角色ID
+     * @returns 新创建的头像信息
+     */
     async createAvatar(roleId: number) {
       this.loading = true;
       this.error = null;
@@ -123,7 +161,11 @@ export const useAvatarStore = defineStore('avatar', {
         this.loading = false;
       }
     },
-    // 更新头像信息
+    /**
+     * 更新头像信息
+     * @param avatarData 头像更新数据
+     * @returns 更新后的头像信息
+     */
     async updateAvatar(avatarData: RoleAvatarRequest) {
       this.loading = true;
       this.error = null;
@@ -164,7 +206,11 @@ export const useAvatarStore = defineStore('avatar', {
         this.loading = false;
       }
     },
-    // 删除头像
+    /**
+     * 删除头像
+     * @param avatarId 头像ID
+     * @returns 是否删除成功
+     */
     async deleteAvatar(avatarId: number) {
       this.loading = true;
       this.error = null;
@@ -193,7 +239,11 @@ export const useAvatarStore = defineStore('avatar', {
         this.loading = false;
       }
     },
-    // 更新头像映射
+    /**
+     * 更新头像映射
+     * 更新avatarMap、spriteUrlMap和avatarTitleMap
+     * @param avatars 头像列表
+     */
     updateAvatarMap(avatars: RoleAvatar[]) {
       avatars.forEach(avatar => {
         if (avatar.avatarId) {
@@ -209,7 +259,10 @@ export const useAvatarStore = defineStore('avatar', {
         }
       });
     },
-    // 清空状态
+    /**
+     * 清空状态
+     * 重置所有状态为初始值
+     */
     clearAvatarState() {
       this.avatars = [];
       this.currentAvatar = null;

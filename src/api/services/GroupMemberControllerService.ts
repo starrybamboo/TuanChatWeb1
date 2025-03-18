@@ -5,7 +5,7 @@
 import type { AdminAddRequset } from '../models/AdminAddRequset';
 import type { AdminRevokeRequest } from '../models/AdminRevokeRequest';
 import type { ApiResultBoolean } from '../models/ApiResultBoolean';
-import type { ApiResultListChatMemberResp } from '../models/ApiResultListChatMemberResp';
+import type { ApiResultListGroupMember } from '../models/ApiResultListGroupMember';
 import type { ApiResultVoid } from '../models/ApiResultVoid';
 import type { MemberAddRequest } from '../models/MemberAddRequest';
 import type { MemberDeleteRequest } from '../models/MemberDeleteRequest';
@@ -99,12 +99,12 @@ export class GroupMemberControllerService {
     }
     /**
      * @param roomId
-     * @returns ApiResultListChatMemberResp OK
+     * @returns ApiResultListGroupMember OK
      * @throws ApiError
      */
     public getMemberList(
         roomId: number,
-    ): CancelablePromise<ApiResultListChatMemberResp> {
+    ): CancelablePromise<ApiResultListGroupMember> {
         return this.httpRequest.request({
             method: 'GET',
             url: '/capi/group/member/list',

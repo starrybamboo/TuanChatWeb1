@@ -2,8 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ChatMemberResp = {
-    uid?: number;
+export type GroupMember = {
+    roomId?: number;
+    userId?: number;
     memberType?: number;
+    createTime?: string;
+    updateTime?: string;
 };
 

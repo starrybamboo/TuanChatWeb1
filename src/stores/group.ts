@@ -4,35 +4,40 @@ import { tuanchat } from '@/api/instance'
 import type { UserInfoResponse } from '@/api/models/UserInfoResponse'
 import type { UserRole } from '@/api/models/UserRole'
 import {useRoleStore} from "@/stores/role.ts";
-
-export interface GroupMember {
-  uid?: number
-  roleId?: number
-  memberType?: number
-}
-
-export interface RoomGroup {
-  roomId?: number
-  roomName?: string
-  roomDesc?: string
-  roomBackground?: string
-  createTime?: string
-  updateTime?: string
-}
+import type {Group} from "@/api/models/Group";
+import type {GroupMember} from "@/api/models/GroupMember";
 
 export const useGroupStore = defineStore('group', () => {
+  /**
+   * 群组管理Store
+   * 负责管理群组信息、成员列表、角色分配等功能
+   * 维护群组成员信息和角色映射关系
+   */
   // 状态
+  /** 当前选中的群组ID */
   const currentGroupId = ref<number | null>(null)
+
+  /** 群组成员列表映射，key为群组ID */
   const members = ref<Map<number, GroupMember[]>>(new Map())
+  /** 群组角色列表映射，key为群组ID */
   const roleMap = ref<Map<number, UserRole[]>>(new Map())
+
+  /** 用户信息缓存映射，key为用户ID */
   const userInfoMap = ref<Map<number, UserInfoResponse>>(new Map())
-  const currentGroup = ref<RoomGroup | null>(null)
+  /** 当前群组信息 */
+  const currentGroup = ref<Group | null>(null)
+  /** 加载状态标识 */
   const loading = ref(false)
+  /** 错误信息 */
   const error = ref<string | null>(null)
 
+  /** 角色Store实例 */
   const roleStore = useRoleStore();
 
-  // 获取群组成员列表
+  /**
+   * 获取群组成员列表
+   * @param groupId 群组ID
+   */
   const fetchMembers = async (groupId: number) => {
     if (!groupId) return
     
@@ -45,7 +50,7 @@ export const useGroupStore = defineStore('group', () => {
         
         // 更新成员列表
         const membersList = memberResponse.data.map(member => ({
-          uid: member.uid,
+          uid: member.userId,
           memberType: member.memberType
         }))
         members.value.set(groupId, membersList)
@@ -77,7 +82,10 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
-  // 获取群组角色列表
+  /**
+   * 获取群组角色列表
+   * @param roomId 房间ID
+   */
   const fetchGroupRoles = async (roomId: number) => {
     loading.value = true
     error.value = null
@@ -105,7 +113,10 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
-  // 获取群组信息
+  /**
+   * 获取群组信息
+   * @param groupId 群组ID
+   */
   const fetchGroupInfo = async (groupId: number) => {
     if (!groupId) return
     
@@ -126,14 +137,22 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
-  // 设置当前群组ID
+  /**
+   * 设置当前群组ID
+   * 同时获取群组信息和成员列表
+   * @param groupId 群组ID
+   */
   const setCurrentGroupId = (groupId: number) => {
     currentGroupId.value = groupId
     fetchMembers(groupId)
     fetchGroupInfo(groupId)
   }
 
-  // 获取成员类型文字说明
+  /**
+   * 获取成员类型文字说明
+   * @param type 成员类型ID
+   * @returns 成员类型说明文字
+   */
   const getMemberTypeText = (type: number): string => {
     switch (type) {
       case 1:
@@ -147,7 +166,10 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
-  // 添加成员
+  /**
+   * 添加群组成员
+   * @param params 添加成员参数，包含roomId、uid、roleId和memberType
+   */
   const addMember = async (params: { roomId: number, uid: number, roleId: number, memberType: number }) => {
     const memberAddRequest = {
       roomId: params.roomId,
@@ -170,7 +192,10 @@ export const useGroupStore = defineStore('group', () => {
     }
   }
 
-  // 删除成员
+  /**
+   * 删除群组成员
+   * @param params 删除成员参数，包含roomId和uid
+   */
   const deleteMember = async (params: { roomId: number, uid: number }) => {
     loading.value = true
     error.value = null

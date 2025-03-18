@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ChatMemberResp } from './ChatMemberResp';
-export type ApiResultListChatMemberResp = {
+import type { GroupMember } from './GroupMember';
+export type ApiResultListGroupMember = {
     success: boolean;
     errCode?: number;
     errMsg?: string;
-    data?: Array<ChatMemberResp>;
+    data?: Array<GroupMember>;
 };
 
