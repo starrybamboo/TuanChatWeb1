@@ -49,24 +49,21 @@ export const useGroupStore = defineStore('group', () => {
       if (memberResponse.success && memberResponse.data) {
         
         // 更新成员列表
-        const membersList = memberResponse.data.map(member => ({
-          uid: member.userId,
-          memberType: member.memberType
-        }))
+        const membersList = memberResponse.data
         members.value.set(groupId, membersList)
         
         // 批量获取用户信息
         const userPromises = membersList
-          .filter(member => member.uid)
+          .filter(member => member.userId)
           .map(member => 
-            tuanchat.userController.getUserInfo(member.uid!)
+            tuanchat.userController.getUserInfo(member.userId!)
               .then(response => {
                 if (response.success && response.data) {
-                  userInfoMap.value.set(member.uid!, response.data)
+                  userInfoMap.value.set(member.userId!, response.data)
                 }
               })
               .catch(error => {
-                console.error(`获取用户 ${member.uid} 信息失败:`, error)
+                console.error(`获取用户 ${member.userId} 信息失败:`, error)
               })
           )
         

@@ -13,7 +13,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/community/index.vue')
   },
   {
-    path: '/chat',
+    path: '/chat/:groupId?',
     name: 'chat',
     component: () => import('@/views/chat/index.vue')
   },

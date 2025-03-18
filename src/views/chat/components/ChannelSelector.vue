@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useGroupStore } from '@/stores/group'
+import { useRouter } from 'vue-router'
 import { tuanchat } from '@/api/instance'
 import ChatContent from './ChatContent.vue'
+
+const router = useRouter()
 
 const groupStore = useGroupStore()
 
@@ -85,6 +88,8 @@ const switchSubGroup = (subGroupId: number) => {
   activeSubGroupId.value = subGroupId;
   // 更新当前群组ID
   groupStore.setCurrentGroupId(subGroupId);
+  // 更新路由
+  router.push(`/chat/${subGroupId}`);
   // 调用ChatContent组件的初始化方法
   if (props.chatContentRef?.initializeChat) {
     props.chatContentRef.initializeChat(subGroupId);

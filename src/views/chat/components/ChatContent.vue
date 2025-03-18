@@ -35,7 +35,7 @@ function searchMessages() {
   if (!searchQuery.value.trim()) return
 
   const query = searchQuery.value.toLowerCase()
-  const messages = ref<ChatMessageResponse[]>([])
+  const messages: ChatMessageResponse[] = Array.from(chatStore.messages.get(chatStore.currentRoomId) || [])
   messages.forEach((msg, index) => {
     if (msg.message.content && msg.message.content.toLowerCase().includes(query)) {
       searchResults.value.push(index)
@@ -83,8 +83,7 @@ const initializeChat = async (roomId: number) => {
 
     // 预加载所有消息中的角色信息
     if (result?.list) {
-      chatStore.messages.set(chatStore.currentRoomId, result.list)
-      const roleIds = new Set(result.list.map(msg => Number(msg.message.roleId)))
+      const roleIds = new Set(result.list.map(msg => msg.message.roleId))
 
       await Promise.all(Array.from(roleIds).map(async roleId => {
         const role = await roleStore.fetchRoleById(roleId)
@@ -254,7 +253,7 @@ onUnmounted(() => {
   <div class="main-content">
     <div class="content-header">
       <div class="header-title">
-        <span>{{ groupStore.currentGroup?.roomName || '故事回顾' }}</span>
+        <span>{{ groupStore.currentGroup?.name || '故事回顾' }}</span>
       </div>
       <div class="search-container">
         <el-input v-model="searchQuery" placeholder="搜索消息..." :prefix-icon="Search" clearable @input="searchMessages"

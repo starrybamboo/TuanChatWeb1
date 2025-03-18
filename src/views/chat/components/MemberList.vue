@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, watch } from 'vue'
 import { useGroupStore } from '@/stores/group'
 import { useAvatarStore } from '@/stores/avatar'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { UserRole } from '@/api/models/UserRole'
+import { useRoute } from 'vue-router'
 
 // 获取store
 const groupStore = useGroupStore()
 const avatarStore = useAvatarStore()
-
+const route = useRoute()
 // 是否显示列表
 const showMemberList = ref(true);
 
@@ -127,15 +128,30 @@ defineExpose({
   toggleMemberList
 });
 
+// 初始化群组数据
+const initGroupData = async (groupId: number) => {
+  groupStore.setCurrentGroupId(groupId)
+  await groupStore.fetchGroupRoles(groupId)
+  await groupStore.fetchMembers(groupId)
+  await initRoleAvatarUrls()
+}
+
+// 监听路由参数变化
+watch(() => route.params.groupId, async (newGroupId) => {
+  if (newGroupId) {
+    const id = parseInt(newGroupId as string)
+    await initGroupData(id)
+  }
+})
+
 // 初始化时获取角色列表和成员列表
 onMounted(async () => {
-  // 如果有当前群组ID，则获取成员列表和角色列表
-  if (groupStore.currentGroupId) {
-    await groupStore.fetchGroupRoles(groupStore.currentGroupId);
-    await groupStore.fetchMembers(groupStore.currentGroupId);
-    await initRoleAvatarUrls();
+  const groupId = route.params.groupId
+  if (groupId) {
+    const id = parseInt(groupId as string)
+    await initGroupData(id)
   }
-});
+})
 </script>
 
 <template>
@@ -151,7 +167,7 @@ onMounted(async () => {
         <div class="member-list">
           <div 
             v-for="member in groupStore.members.get(groupStore.currentGroupId || 0) || []" 
-            :key="String(member.userId)" 
+            :key="member.userId" 
             class="member-item"
           >
             <div class="member-avatar">
@@ -174,11 +190,11 @@ onMounted(async () => {
 
     <!-- 角色列表 -->
     <div class="list-section">
-      <div class="members-header">角色列表 - {{ Array.from(groupStore.roleMap.values()).length }}</div>
+      <div class="members-header">角色列表 - {{ (groupStore.roleMap.get(Number(route.params.groupId) || 0) || []).length }}</div>
       <div class="members-groups">
         <div class="member-list">
           <div 
-            v-for="role in groupStore.roleMap.get(groupStore.currentGroupId || 0) || []" 
+            v-for="role in groupStore.roleMap.get(Number(route.params.groupId) || 0) || []" 
             :key="String(role.roleId)" 
             class="member-item"
           >
