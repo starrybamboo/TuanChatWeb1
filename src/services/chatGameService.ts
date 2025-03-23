@@ -54,7 +54,7 @@ export class ChatGameService {
       }
 
       // 2. 获取所有角色
-      const rolesResponse = await tuanchat.roomGroupController.groupRole(this.roomId);
+      const rolesResponse = await tuanchat.groupRoleController.groupRole(this.roomId);
       if (!rolesResponse.success || !rolesResponse.data) {
         throw new Error('获取角色失败');
       }
